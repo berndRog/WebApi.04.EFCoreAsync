@@ -1,5 +1,5 @@
 using System;
-using WebApi.DomainModel.NullEntities;
+using WebApi.Core.DomainModel.NullEntities;
 namespace WebApi.Core.DomainModel.Entities;
 
 public class Account: IEntity {
