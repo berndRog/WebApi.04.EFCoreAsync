@@ -40,6 +40,12 @@ public class DataContext: DbContext, IDataContext  {
       _logger?.LogDebug("\n{output}",ChangeTracker.DebugView.LongView);
       return result > 0;
    }
+   
+   public void ClearChangeTracker() =>
+      ChangeTracker.Clear();
+
+   public void LogChangeTracker(string text) =>
+      _logger?.LogDebug("{Text}\n{Tracker}", text, ChangeTracker.DebugView.LongView);
    #endregion
    
    #region static methods

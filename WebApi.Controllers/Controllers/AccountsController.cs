@@ -30,8 +30,8 @@ public class AccountsController(
       logger.LogDebug("GetAccountsByOwner ownerId={ownerId}", ownerId);
       
       // get all accounts of a given owner
-      var accounts = await accountsRepository.SelectByOwnerIdAsync(ownerId);
-      
+//    var accounts = await accountsRepository.SelectByOwnerIdAsync(ownerId);
+      var accounts = await accountsRepository.SelectByAsync(o => o.Id == ownerId);      
       // return accounts as Dtos
       var accountDtos = mapper.Map<IEnumerable<AccountDto>>(accounts);
       return Ok(accountDtos);  
@@ -43,7 +43,7 @@ public class AccountsController(
    public async Task<ActionResult<AccountDto?>> GetAccountById(Guid id) {
       logger.LogDebug("GetAccountById id={id}", id);
       
-      switch (await accountsRepository.FindByIdAsync(id)) {
+      switch (await accountsRepository.FindByIdAsync(id)) {   
          // return account as Dto
          case Account account: 
             return Ok(mapper.Map<AccountDto>(account));
@@ -58,8 +58,9 @@ public class AccountsController(
    [HttpGet("accounts/iban/{iban}")]
    public async Task<ActionResult<AccountDto?>> GetAccountByIban(string iban) {
       logger.LogDebug("GetAccountByIban iban={iban}", iban);
-      
-      switch (await accountsRepository.FindByIbanAsync(iban)) {
+
+//    switch (await accountsRepository.FindByIbanAsync(iban)) {
+      switch (await accountsRepository.FindByAsync(o => o.Iban == iban)) {
          // return account as Dto
          case Account account: 
             return Ok(mapper.Map<AccountDto>(account));

@@ -59,7 +59,8 @@ public class OwnersController(
       [FromQuery] string name
    ) {
       logger.LogDebug("GetOwnersByName() name={name}", name);
-      switch (await ownersRepository.SelectByNameAsync(name)) {
+   // switch (await ownersRepository.SelectByNameAsync(name)) {
+      switch (await ownersRepository.SelectByAsync(o => o.Name == name)) {
          // return owners as Dtos
          case IEnumerable<Owner> owners: 
             return Ok(mapper.Map<IEnumerable<Owner>, IEnumerable<OwnerDto>>(owners));
@@ -75,7 +76,10 @@ public class OwnersController(
    public async Task<ActionResult<OwnerDto?>> GetOwnerByEmail(
       [FromQuery] string email
    ) {
-      switch (await ownersRepository.FindByEmailAsync(email)) {
+
+   // switch (await ownersRepository.FindByEmailAsync(email)) { 
+      switch (await ownersRepository.FindByAsync(o => o.Email == email)) {
+
          // return owner as Dto
          case Owner owner: 
             return Ok(mapper.Map<OwnerDto>(owner));
@@ -104,7 +108,9 @@ public class OwnersController(
          return BadRequest($"GetOwnerByBirthdate: Invalid date 'to': {to}");
 
       // Get owners by birthdate
-      var owners = await ownersRepository.SelectByBirthDateAsync(dateFrom, dateTo);   
+//    var owners = await ownersRepository.SelectByBirthDateAsync(dateFrom, dateTo);   
+      var owners = await ownersRepository.SelectByAsync(o => 
+         o.Birthdate <= dateFrom && o.Birthdate >= dateTo);   
       
       // return owners as Dtos
       return Ok(mapper.Map<IEnumerable<OwnerDto>>(owners));

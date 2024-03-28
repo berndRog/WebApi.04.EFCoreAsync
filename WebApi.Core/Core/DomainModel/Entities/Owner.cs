@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 namespace WebApi.Core.DomainModel.Entities; 
 
-public class Owner: IEntity {
+public class Owner: AEntity {
    
    #region properties
-   public Guid     Id       { get; init; } = Guid.Empty;
+   public override Guid Id  { get; init; } = Guid.Empty;
    public string   Name     { get; set; } = string.Empty;
    public DateTime Birthdate{ get; init; } = DateTime.UtcNow;
    public string   Email    { get; set; } = string.Empty;
@@ -16,7 +16,7 @@ public class Owner: IEntity {
    #endregion
    
    #region ctor
-   public Owner() {
+   public Owner(): base() {
       Id = Guid.NewGuid();
    }
    #endregion
