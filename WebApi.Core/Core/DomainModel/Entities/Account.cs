@@ -5,7 +5,7 @@ namespace WebApi.Core.DomainModel.Entities;
 public class Account: AEntity {
    public override Guid Id { get; init; } = Guid.Empty;
    public string  Iban     { get; init; } = string.Empty;
-   public double  Balance  { get; private set; }
+   public double  Balance  { get; set; }
    
    // Navigation property
    public Owner Owner   { get; set; } = NullOwner.Instance;

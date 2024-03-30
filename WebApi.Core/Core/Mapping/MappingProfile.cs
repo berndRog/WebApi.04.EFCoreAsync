@@ -1,7 +1,9 @@
-﻿using AutoMapper;
+﻿using System.Runtime.CompilerServices;
+using AutoMapper;
 using WebApi.Core.DomainModel.Entities;
 using WebApi.Core.Dto;
 
+[assembly: InternalsVisibleTo("WebApiTest")]
 namespace WebApi.Core.Mapping;
 internal class MappingProfile : Profile {
    public MappingProfile() {

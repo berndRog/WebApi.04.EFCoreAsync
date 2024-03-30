@@ -13,7 +13,7 @@ public interface IGenericRepository<T> where T : AEntity {
    Task<IEnumerable<T>> SelectAsync   (bool withTracking = false);
    Task<T?>             FindByIdAsync (Guid id);
 //                                    LINQ expression with lamdba 
-   Task<IEnumerable<T>> SelectByAsync (Expression<Func<T, bool>> p);
+   Task<IEnumerable<T>> FilterByAsync (Expression<Func<T, bool>> p);
    Task<T?>             FindByAsync   (Expression<Func<T, bool>> predicate); 
    
    // write to in-memory repository

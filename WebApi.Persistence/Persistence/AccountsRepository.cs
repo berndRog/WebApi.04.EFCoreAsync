@@ -42,5 +42,11 @@ internal  class AccountsRepository(
    // public async Task<Account?> FindByIbanAsync(string iban) =>
    //    await dataContext.Accounts
    //       .FirstOrDefaultAsync(a => a.Iban == iban);
+
    
+   public async Task<IEnumerable<Account>> SelectByOwnerIdAsync(Guid ownerId) =>
+       await DatabaseContext.Owners
+          .Where(o => o.Id == ownerId)
+          .SelectMany(o => o.Accounts)  // join
+          .ToListAsync();
 }

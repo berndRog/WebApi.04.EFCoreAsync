@@ -20,13 +20,21 @@ public class DataContext: DbContext, IDataContext  {
    // ctor for migration only
    public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
-   public DataContext(DbContextOptions<DataContext> options, ILogger<DataContext> logger)
-        : base(options) {
+   public DataContext(
+      DbContextOptions<DataContext> options, 
+      ILogger<DataContext> logger
+   ) : base(options) {
+      
+      
       _logger = logger;
    }
    #endregion
 
    #region methods
+   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+      optionsBuilder.EnableSensitiveDataLogging(true);
+   }
+   
    public async Task<bool> SaveAllChangesAsync() {
       
       // log repositories before transfer to the database
@@ -67,9 +75,11 @@ public class DataContext: DbContext, IDataContext  {
       string connectionString = configuration.GetSection("ConnectionStrings")[useDatabase]
          ?? throw new Exception("ConnectionStrings is not available"); 
       
-      // /users/documents
-      string pathDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
+      // /users/documents/WebApi
+      string directory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+      string pathDocuments = Path.Combine(directory,"WebApi");
+      Directory.CreateDirectory(pathDocuments);
+      
       switch (useDatabase) {
          case "LocalDb":
             var dbFile = $"{Path.Combine(pathDocuments, connectionString)}.mdf";

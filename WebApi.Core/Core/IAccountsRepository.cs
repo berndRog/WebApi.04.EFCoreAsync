@@ -16,4 +16,6 @@ namespace WebApi.Core;
 // }
 
 
-public interface IAccountsRepository: IGenericRepository<Account>;
+public interface IAccountsRepository : IGenericRepository<Account> {
+   Task<IEnumerable<Account>> SelectByOwnerIdAsync(Guid ownerId);
+}

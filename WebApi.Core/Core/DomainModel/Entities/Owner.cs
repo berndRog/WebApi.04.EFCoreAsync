@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using WebApi.Core.DomainModel.NullEntities;
 namespace WebApi.Core.DomainModel.Entities; 
 
 public class Owner: AEntity {
@@ -28,7 +29,7 @@ public class Owner: AEntity {
    }
    
    public void Add(Account account) {
-      if (account.OwnerId != Id)
+      if (account.OwnerId != NullOwner.Instance.Id && account.OwnerId != Id)
          throw new ApplicationException("Account is already asigned to another owner");
       account.Owner = this;
       account.OwnerId = Id;

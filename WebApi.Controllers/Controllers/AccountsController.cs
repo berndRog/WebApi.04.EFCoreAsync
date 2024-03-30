@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -24,14 +25,14 @@ public class AccountsController(
    // Get all accounts of a given owner as Dto
    // http://localhost:5010/banking/owners/{ownerId:Guid}/accounts
    [HttpGet("owners/{ownerId:Guid}/accounts")]
-   public async Task<ActionResult<IEnumerable<Account>>> GetAccountsByOwner(
+   public async Task<ActionResult<IEnumerable<AccountDto>>> GetAccountsByOwnerId(
       Guid ownerId
    ) {
       logger.LogDebug("GetAccountsByOwner ownerId={ownerId}", ownerId);
       
       // get all accounts of a given owner
 //    var accounts = await accountsRepository.SelectByOwnerIdAsync(ownerId);
-      var accounts = await accountsRepository.SelectByAsync(o => o.Id == ownerId);      
+      var accounts = await accountsRepository.FilterByAsync(a => a.OwnerId == ownerId);      
       // return accounts as Dtos
       var accountDtos = mapper.Map<IEnumerable<AccountDto>>(accounts);
       return Ok(accountDtos);  
@@ -60,7 +61,7 @@ public class AccountsController(
       logger.LogDebug("GetAccountByIban iban={iban}", iban);
 
 //    switch (await accountsRepository.FindByIbanAsync(iban)) {
-      switch (await accountsRepository.FindByAsync(o => o.Iban == iban)) {
+      switch (await accountsRepository.FindByAsync(a => a.Iban == iban)) {
          // return account as Dto
          case Account account: 
             return Ok(mapper.Map<AccountDto>(account));
@@ -86,10 +87,6 @@ public class AccountsController(
       var owner = await ownersRepository.FindByIdAsync(ownerId);
       if (owner == null)
          return BadRequest("Bad request: ownerId does't exists.");
-   
-      // check if ownerId from route matches ownerId in account
-      if (account.OwnerId != ownerId)
-         return BadRequest("Bad request: ownerId from route does not match ownerId in account.");
       
       // check if account with given Id already exists   
       if(await accountsRepository.FindByIdAsync(account.Id) != null) 
@@ -103,8 +100,13 @@ public class AccountsController(
       // save to datastore
       await dataContext.SaveAllChangesAsync();
       
-      // return created account as Dto      
-      var uri = new Uri($"{Request.Path}/accounts/{account.Id}", UriKind.Relative);
+      // return created account as Dto
+
+      string requestPath = null!;
+      if(Request == null) requestPath = $"http://localhost:5100/banking/owners/{ownerId}";
+      else                requestPath = Request.Path;
+      
+      var uri = new Uri($"{requestPath}/accounts/{account.Id}", UriKind.Relative);
       return Created(uri, mapper.Map<AccountDto>(account));     
    }
    

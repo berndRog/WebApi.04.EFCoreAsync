@@ -60,7 +60,7 @@ public class OwnersController(
    ) {
       logger.LogDebug("GetOwnersByName() name={name}", name);
    // switch (await ownersRepository.SelectByNameAsync(name)) {
-      switch (await ownersRepository.SelectByAsync(o => o.Name == name)) {
+      switch (await ownersRepository.FilterByAsync(o => o.Name == name)) {
          // return owners as Dtos
          case IEnumerable<Owner> owners: 
             return Ok(mapper.Map<IEnumerable<Owner>, IEnumerable<OwnerDto>>(owners));
@@ -109,7 +109,7 @@ public class OwnersController(
 
       // Get owners by birthdate
 //    var owners = await ownersRepository.SelectByBirthDateAsync(dateFrom, dateTo);   
-      var owners = await ownersRepository.SelectByAsync(o => 
+      var owners = await ownersRepository.FilterByAsync(o => 
          o.Birthdate <= dateFrom && o.Birthdate >= dateTo);   
       
       // return owners as Dtos
@@ -129,7 +129,7 @@ public class OwnersController(
    // Create a new owner
    // http://localhost:5100/banking/owners
    [HttpPost("")]
-   public async Task<ActionResult<Owner>> CreateOwner(
+   public async Task<ActionResult<OwnerDto>> CreateOwner(
       [FromBody] OwnerDto ownerDto
    ) {
       logger.LogDebug("CreateOwner() ownerDto={ownerDto}", ownerDto.Name);

@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using WebApi.Core.DomainModel.Entities;
 namespace WebApi.Core;
 
-// public interface IOwnersRepository {
+//  public interface IOwnersRepository {
 //    Task<IEnumerable<Owner>> SelectAsync();
 //    Task<Owner?> FindByIdAsync(Guid id);
 //    void Add(Owner owner);
@@ -16,4 +17,12 @@ namespace WebApi.Core;
 //    Task<IEnumerable<Owner>> SelectByBirthDateAsync(DateTime from, DateTime to);
 // }
 
-public interface IOwnersRepository : IGenericRepository<Owner>;
+public interface IOwnersRepository : IGenericRepository<Owner> {
+
+   Task<IEnumerable<Owner>> SelectByJoinAsync(
+      bool withTracking = false,
+      Expression<Func<Owner, bool>>? predicate = null,
+      bool joinAccounts = false
+   );
+
+}

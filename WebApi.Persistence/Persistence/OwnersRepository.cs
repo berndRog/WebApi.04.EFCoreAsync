@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Core;
@@ -30,7 +31,7 @@ internal class OwnersRepository(
    //
    // public void Remove(Owner owner) =>
    //    dataContext.Owners.Remove(owner);
-
+   //
    // public async Task<IEnumerable<Owner>> SelectByNameAsync(string name) =>
    //    await DatabaseContext.Owners
    //       .Where(owner => owner.Name.Contains(name))
@@ -46,4 +47,19 @@ internal class OwnersRepository(
    //          owner.Birthdate >= from &&
    //          owner.Birthdate <= to)
    //       .ToListAsync();
+   
+   
+   public async Task<IEnumerable<Owner>> SelectByJoinAsync(
+      bool withTracking, 
+      Expression<Func<Owner, bool>>? predicate,
+      bool joinAccounts
+   ) {
+      IQueryable<Owner> query = TypeDbSet;
+      if(!withTracking)     query = query.AsNoTracking();
+      if(predicate != null) query = query.Where(predicate);
+      if (joinAccounts)     query = query.Include(o => o.Accounts);
+      return await query.ToListAsync(); 
+      
+   }
+   
 }
