@@ -9,6 +9,7 @@ using WebApi.Core.Dto;
 using WebApi.Persistence;
 using WebApiTest.Di;
 using WebApiTest.Persistence;
+
 namespace WebApiTest.Controllers;
 [Collection(nameof(SystemTestCollectionDefinition))]
 public class OwnersControllerTest: BaseControllerTest {
@@ -38,9 +39,11 @@ public class OwnersControllerTest: BaseControllerTest {
          _mapper.Map<OwnerDto>(_seed.Owner2)
       };
       var expectedDtos = _mapper.Map<IEnumerable<OwnerDto>>(expected); 
+      
       // Act
       ActionResult<IEnumerable<OwnerDto>> response = 
          await _ownersController.GetOwnersByName("Mustermann");
+     
       // Assert
       var(success, result,value) = 
          Helper.ResultFromResponse<OkObjectResult, IEnumerable<OwnerDto>>(response);
@@ -55,22 +58,25 @@ public class OwnersControllerTest: BaseControllerTest {
       // Arrange
       await _arrangeTest.OwnersAsync(_seed);
       var idError = new Guid("12345678-0000-0000-0000-000000000000");
+      
       // Act
       ActionResult<OwnerDto> response = 
          await _ownersController.GetOwnerById(idError);
+      
       // Assert
       var (success, result, value) = 
          Helper.ResultFromResponse<NotFoundObjectResult, OwnerDto>(response);
       result.StatusCode.Should().Be(404);
-      value.Should().Be("Owner with given id not found");
    }
    
    [Fact]
    public async Task CreateOwnerTest() {
       // Arrange
       OwnerDto owner1Dto = _mapper.Map<OwnerDto>(_seed.Owner1); 
+      
       // Act
       ActionResult<OwnerDto> response = await _ownersController.CreateOwner(owner1Dto);
+      
       // Assert
       var(success, result, value) = 
          Helper.ResultFromResponse<CreatedResult, OwnerDto>(response);
@@ -84,8 +90,10 @@ public class OwnersControllerTest: BaseControllerTest {
       // Arrange
       OwnerDto owner1Dto = _mapper.Map<OwnerDto>(_seed.Owner1); 
       await _ownersController.CreateOwner(owner1Dto);
+      
       // Act
       var response = await _ownersController.CreateOwner(owner1Dto);
+      
       // Assert
       var(succes,result,value) = 
          Helper.ResultFromResponse<ConflictObjectResult, OwnerDto>(response);

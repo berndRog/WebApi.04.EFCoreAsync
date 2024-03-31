@@ -101,12 +101,10 @@ public class AccountsController(
       await dataContext.SaveAllChangesAsync();
       
       // return created account as Dto
-
-      string requestPath = null!;
-      if(Request == null) requestPath = $"http://localhost:5100/banking/owners/{ownerId}";
-      else                requestPath = Request.Path;
-      
-      var uri = new Uri($"{requestPath}/accounts/{account.Id}", UriKind.Relative);
+      var path = Request == null
+         ? $"/banking/accounts/{account.Id}"
+         : $"{Request.Path}";
+      var uri = new Uri(path, UriKind.Relative);
       return Created(uri, mapper.Map<AccountDto>(account));     
    }
    

@@ -60,7 +60,7 @@ public class OwnersController(
    ) {
       logger.LogDebug("GetOwnersByName() name={name}", name);
    // switch (await ownersRepository.SelectByNameAsync(name)) {
-      switch (await ownersRepository.FilterByAsync(o => o.Name == name)) {
+      switch (await ownersRepository.FilterByAsync(o => o.Name.Contains(name))) {
          // return owners as Dtos
          case IEnumerable<Owner> owners: 
             return Ok(mapper.Map<IEnumerable<Owner>, IEnumerable<OwnerDto>>(owners));
@@ -139,16 +139,18 @@ public class OwnersController(
       
       // check if owner with given Id already exists   
       if(await ownersRepository.FindByIdAsync(owner.Id) != null) 
-         return BadRequest("CreateOwner: Owner with the given id already exists");
+         return Conflict("CreateOwner: Owner with the given id already exists");
       
       // add owner to repository
       ownersRepository.Add(owner); 
       // save to datastore
       await dataContext.SaveAllChangesAsync();
       
-      // return created owner      
-      var uri = new Uri($"{Request.Path}/{owner.Id}", UriKind.Relative);
-      return Created(uri, mapper.Map<OwnerDto>(owner));     
+      // return created account as Dto
+      var path = Request == null
+         ? $"/banking/owners/{owner.Id}"
+         : $"{Request.Path}";
+      var uri = new Uri(path, UriKind.Relative);return Created(uri, mapper.Map<OwnerDto>(owner));     
    }
    
    // Update owner
@@ -186,7 +188,7 @@ public class OwnersController(
    // Delete owner
    // http://localhost:5100/banking/owners/{id}
    [HttpDelete("{id:Guid}")] 
-   public async Task<ActionResult<Owner>> DeleteOwner(
+   public async Task<IActionResult> DeleteOwner(
       [FromRoute] Guid id
    ) {
       logger.LogDebug("DeleteOwner {id}", id.As8());

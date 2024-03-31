@@ -136,6 +136,7 @@ public class AccountsControllerTest {
       var (success, result, value) =
          Helper.ResultFromResponse<CreatedResult, AccountDto>(response);
       result.StatusCode.Should().Be(201);
+      account1Dto = account1Dto with { OwnerId=_seed.Owner1.Id};
       value.Should().NotBeNull().And
          .BeEquivalentTo(account1Dto);
    }
