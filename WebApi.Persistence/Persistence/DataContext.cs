@@ -8,7 +8,7 @@ using WebApi.Core;
 using WebApi.Core.DomainModel.Entities;
 namespace WebApi.Persistence; 
 
-public class DataContext: DbContext, IDataContext  {
+internal class DataContext: DbContext, IDataContext  {
 
    #region fields
    private readonly ILogger<DataContext>? _logger;
@@ -24,8 +24,6 @@ public class DataContext: DbContext, IDataContext  {
       DbContextOptions<DataContext> options, 
       ILogger<DataContext> logger
    ) : base(options) {
-      
-      
       _logger = logger;
    }
    #endregion

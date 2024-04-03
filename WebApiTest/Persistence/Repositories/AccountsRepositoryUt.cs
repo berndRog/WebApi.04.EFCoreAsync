@@ -72,5 +72,19 @@ public  class AccountsRepositoryUt: BaseRepositoryUt {
       _dataContext.LogChangeTracker("FindbyIban");
       actual.Should().BeEquivalentTo(_seed.Account3, options => options.Excluding(a => a.Owner));
    }
+
+   [Fact]
+   public async Task SelectByOwnersIdUt() { 
+      // Arrange
+      await _arrangeTest.OwnersWithAccountsAsync(_seed); // repository cache is cleared
+      // Act 
+      var actual =  
+         await _accountsRepository.SelectByOwnerIdAsync(_seed.Owner1.Id);
+      // Assert
+      _dataContext.LogChangeTracker("FindbyIban");
+      //actual.Should().BeEquivalentTo(_seed.Account3, options => options.Excluding(a => a.Owner));
+   }
+
+
    #endregion
 }

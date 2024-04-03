@@ -49,4 +49,10 @@ internal  class AccountsRepository(
           .Where(o => o.Id == ownerId)
           .SelectMany(o => o.Accounts)  // join
           .ToListAsync();
+   
+   
+   public async Task<IEnumerable<Account>> SelectByOwnerId2Async(Guid ownerId) =>
+      await DatabaseContext.Accounts
+         .Where(a => a.OwnerId == ownerId)
+         .ToListAsync();
 }

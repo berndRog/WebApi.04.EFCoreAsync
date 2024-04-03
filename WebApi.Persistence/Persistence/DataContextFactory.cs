@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 namespace WebApi.Persistence;
-public class DataContextFactory : IDesignTimeDbContextFactory<DataContext> {
+internal class DataContextFactory : IDesignTimeDbContextFactory<DataContext> {
 
    public DataContext CreateDbContext(string[] args) {
       // Nuget:  Microsoft.Extensions.Configuration

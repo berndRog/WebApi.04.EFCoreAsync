@@ -32,7 +32,6 @@ public static class DiPersistence {
          default:
             throw new Exception("appsettings.json UseDatabase not available");
       }
-
       
       return services;
 
