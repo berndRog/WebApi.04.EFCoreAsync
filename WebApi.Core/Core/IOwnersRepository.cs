@@ -20,8 +20,8 @@ namespace WebApi.Core;
 public interface IOwnersRepository : IGenericRepository<Owner> {
 
    Task<IEnumerable<Owner>> FilterByJoinAsync(
-      bool withTracking = false,
       Expression<Func<Owner, bool>>? predicate = null,
+      bool withTracking = false,
       bool joinAccounts = false
    );
 

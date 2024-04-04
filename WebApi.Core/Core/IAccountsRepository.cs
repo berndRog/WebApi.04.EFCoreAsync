@@ -17,5 +17,9 @@ namespace WebApi.Core;
 
 
 public interface IAccountsRepository : IGenericRepository<Account> {
-   Task<IEnumerable<Account>> SelectByOwnerIdAsync(Guid ownerId);
+   Task<IEnumerable<Account>> SelectByOwnerIdJoinAsync(
+      Guid ownerId,
+      bool joinAccounts = false,
+      bool withTracking = false
+   );
 }

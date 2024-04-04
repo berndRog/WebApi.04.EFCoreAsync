@@ -72,19 +72,21 @@ public  class AccountsRepositoryUt: BaseRepositoryUt {
       _dataContext.LogChangeTracker("FindbyIban");
       actual.Should().BeEquivalentTo(_seed.Account3, options => options.Excluding(a => a.Owner));
    }
-
+   
    [Fact]
-   public async Task SelectByOwnersIdUt() { 
+   public async Task SelectByOwner1IdUt() { 
       // Arrange
       await _arrangeTest.OwnersWithAccountsAsync(_seed); // repository cache is cleared
+      var expected = new List<Account>{ _seed.Account1, _seed.Account2 };
+      
       // Act 
       var actual =  
-         await _accountsRepository.SelectByOwnerIdAsync(_seed.Owner1.Id);
+         await _accountsRepository.SelectByOwnerIdJoinAsync(_seed.Owner1.Id, true, true);
+      
       // Assert
-      _dataContext.LogChangeTracker("FindbyIban");
-      //actual.Should().BeEquivalentTo(_seed.Account3, options => options.Excluding(a => a.Owner));
+      _dataContext.LogChangeTracker("SelectByOwner1IdJoinAsync");
+      actual.Should().BeEquivalentTo(expected, options => options.IgnoringCyclicReferences());
    }
-
 
    #endregion
 }

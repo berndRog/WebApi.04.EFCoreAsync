@@ -282,7 +282,7 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
       await _arrangeTest.OwnersWithAccountsAsync(_seed);
       // Act  with tracking
       IEnumerable<Owner> actual = 
-         await _ownersRepository.FilterByJoinAsync(true, null, false);
+         await _ownersRepository.FilterByJoinAsync(null, false, true);
       // Assert
       actual.Should()
          .NotBeNull().And
@@ -299,24 +299,27 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
    }
    [Fact]
    public async Task FilterByJoinAsync_WithTracking_WithJoinUt() {
+      
       // Arrange
-      await _arrangeTest.OwnersWithAccountsAsync(_seed); 
+      await _arrangeTest.OwnersWithAccountsAsync(_seed);
+      var expected = _seed.Owners;
+      
       // Act  with tracking
-      var actual = await _ownersRepository.FilterByJoinAsync(false, null, true);
+      var actual = await _ownersRepository.FilterByJoinAsync(null, true, true);
+
       // Assert
+      _dataContext.LogChangeTracker("FilterByJoinAsync_WithTracking_WithJoinUt");
       actual.Should()
          .NotBeNull().And
          .NotBeEmpty().And
          .HaveCount(6).And
          .BeOfType<List<Owner>>();
      
-     actual.Should().BeEquivalentTo(_seed.Owners, options => {
+     actual.Should().BeEquivalentTo(expected, options => {
         options.For(owner => owner.Accounts).Exclude(accout => accout.Owner);
         options.IgnoringCyclicReferences(); 
         return options;
      });
-      
-      
    }
    private EquivalencyAssertionOptions<Owner> ExcludeReferences(
       EquivalencyAssertionOptions<Owner> options
@@ -324,6 +327,31 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
       options.For(owner => owner.Accounts).Exclude(accout => accout.Owner);
       options.IgnoringCyclicReferences();
       return options;
+   }
+   
+   [Fact]
+   public async Task FilterByOwner1JoinAsync_WithTracking_WithJoinUt() {
+      // Arrange
+      await _arrangeTest.OwnersWithAccountsAsync(_seed); 
+      var expected = new List<Owner> { _seed.Owner1 };
+      
+      // Act  with tracking
+      var actual = await _ownersRepository
+         .FilterByJoinAsync(o => o.Id ==_seed.Owner1.Id, true, true);
+      
+      // Assert
+      _dataContext.LogChangeTracker("FilterByOwner1JoinAsync_WithTracking_WithJoinUt");
+      actual.Should()
+         .NotBeNull().And
+         .NotBeEmpty().And
+         .HaveCount(1).And
+         .BeOfType<List<Owner>>();
+     
+      actual.Should().BeEquivalentTo(expected, options => {
+         options.For(owner => owner.Accounts).Exclude(accout => accout.Owner);
+         options.IgnoringCyclicReferences(); 
+         return options;
+      });
    }
    #endregion
 }

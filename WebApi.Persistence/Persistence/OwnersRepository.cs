@@ -54,16 +54,24 @@ internal class OwnersRepository(
    
    
    public async Task<IEnumerable<Owner>> FilterByJoinAsync(
-      bool withTracking, 
       Expression<Func<Owner, bool>>? predicate,
-      bool joinAccounts
+      bool joinAccounts,
+      bool withTracking
    ) {
+      // convert DbSet into an IQueryable
       IQueryable<Owner> query = TypeDbSet;
+      
+      // switch off tracking if not needed
       if(!withTracking)     query = query.AsNoTracking();
+      
+      // filter by predicate
       if(predicate != null) query = query.Where(predicate);
+      
+      // join accounts with owner
       if (joinAccounts)     query = query.Include(o => o.Accounts);
+      
+      // eager evaluation of results
       return await query.ToListAsync(); 
       
    }
-   
 }
