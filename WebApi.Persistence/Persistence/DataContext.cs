@@ -1,13 +1,17 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using WebApi.Core;
 using WebApi.Core.DomainModel.Entities;
-namespace WebApi.Persistence; 
 
+[assembly: InternalsVisibleTo("WebApiTest")]
+[assembly: InternalsVisibleTo("WebApiTest.Persistence")]
+[assembly: InternalsVisibleTo("WebApiTest.Controllers")]
+namespace WebApi.Persistence; 
 internal class DataContext: DbContext, IDataContext  {
 
    #region fields

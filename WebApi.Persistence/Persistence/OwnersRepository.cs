@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Core;
 using WebApi.Core.DomainModel.Entities;
+
+[assembly: InternalsVisibleTo("WebApiTest.Persistence")]
+[assembly: InternalsVisibleTo("WebApiTest.Controllers")] 
 namespace WebApi.Persistence;
 
 internal class OwnersRepository(
@@ -49,7 +53,7 @@ internal class OwnersRepository(
    //       .ToListAsync();
    
    
-   public async Task<IEnumerable<Owner>> SelectByJoinAsync(
+   public async Task<IEnumerable<Owner>> FilterByJoinAsync(
       bool withTracking, 
       Expression<Func<Owner, bool>>? predicate,
       bool joinAccounts

@@ -5,7 +5,8 @@ using Microsoft.Extensions.Logging;
 using WebApi.Di;
 
 namespace WebApi;
-public class Program {
+
+public static class Program {
 
    static void Main(string[] args) {
 

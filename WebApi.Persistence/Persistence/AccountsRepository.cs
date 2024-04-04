@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 using WebApi.Core;
 using WebApi.Core.DomainModel.Entities;
 
-//[assembly: InternalsVisibleTo("WebApiTest")]
+[assembly: InternalsVisibleToAttribute("WebApiTest")]
+[assembly: InternalsVisibleToAttribute("WebApiTest.Persistence")]
+[assembly: InternalsVisibleToAttribute("WebApiTest.Controllers")] 
+ 
 namespace WebApi.Persistence;
 internal  class AccountsRepository(
    DataContext dataContext

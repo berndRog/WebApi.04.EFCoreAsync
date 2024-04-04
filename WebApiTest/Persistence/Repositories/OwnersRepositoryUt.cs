@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
 using Microsoft.Extensions.DependencyInjection;
 using WebApi.Core;
 using WebApi.Core.DomainModel.Entities;
@@ -276,12 +277,12 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
    
    #region with accounts
    [Fact]
-   public async Task SelectWithTrackingAsyncUt() {
+   public async Task FilterByJoinWithTracking_WithoutJoinAsyncUt() {
       // Arrange
       await _arrangeTest.OwnersWithAccountsAsync(_seed);
       // Act  with tracking
-      IEnumerable<Owner> actual = await _ownersRepository.SelectByJoinAsync(
-         true, null, false);
+      IEnumerable<Owner> actual = 
+         await _ownersRepository.FilterByJoinAsync(true, null, false);
       // Assert
       actual.Should()
          .NotBeNull().And
@@ -297,44 +298,32 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
       owners[5].Accounts.Should().HaveCount(0);
    }
    [Fact]
-   public async Task SelectJoinAccountsAsyncUt() {
+   public async Task FilterByJoinAsync_WithTracking_WithJoinUt() {
       // Arrange
       await _arrangeTest.OwnersWithAccountsAsync(_seed); 
       // Act  with tracking
-      var actual = await _ownersRepository.SelectByJoinAsync(false, null, true);
+      var actual = await _ownersRepository.FilterByJoinAsync(false, null, true);
       // Assert
       actual.Should()
          .NotBeNull().And
          .NotBeEmpty().And
          .HaveCount(6).And
          .BeOfType<List<Owner>>();
-      var owners = (List<Owner>)actual;
-      owners[0].Accounts.Should().HaveCount(2);
-      owners[1].Accounts.Should().HaveCount(1);
-      owners[2].Accounts.Should().HaveCount(1);
-      owners[3].Accounts.Should().HaveCount(1);
-      owners[4].Accounts.Should().HaveCount(2);
-      owners[5].Accounts.Should().HaveCount(1);
+     
+      actual.Should().BeEquivalentTo(_seed.Owners, options => {
+         options.For(owner => owner.Accounts).Exclude(accout => accout.Owner);
+         options.IgnoringCyclicReferences(); 
+         return options;
+      });
+      
+      
    }
-   [Fact]
-   public async Task SelectWithTrackingAndAccountsAsyncUt() {
-      // Arrange
-      await _arrangeTest.OwnersWithAccountsAsync(_seed); 
-      // Act  with tracking
-      var actual = await _ownersRepository.SelectByJoinAsync(true, null, true);
-      // Assert
-      actual.Should()
-         .NotBeNull().And
-         .NotBeEmpty().And
-         .HaveCount(6).And
-         .BeOfType<List<Owner>>();
-      var owners = (List<Owner>)actual;
-      owners[0].Accounts.Should().HaveCount(2);
-      owners[1].Accounts.Should().HaveCount(1);
-      owners[2].Accounts.Should().HaveCount(1);
-      owners[3].Accounts.Should().HaveCount(1);
-      owners[4].Accounts.Should().HaveCount(2);
-      owners[5].Accounts.Should().HaveCount(1);
+   private EquivalencyAssertionOptions<Owner> ExcludeReferences(
+      EquivalencyAssertionOptions<Owner> options
+   ) {
+      options.For(owner => owner.Accounts).Exclude(accout => accout.Owner);
+      options.IgnoringCyclicReferences();
+      return options;
    }
    #endregion
 }

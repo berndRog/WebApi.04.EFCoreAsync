@@ -10,6 +10,8 @@ using WebApi.Core;
 using WebApi.Core.DomainModel.Entities;
 
 [assembly: InternalsVisibleToAttribute("WebApiTest")]
+[assembly: InternalsVisibleToAttribute("WebApiTest.Persistence")]
+[assembly: InternalsVisibleToAttribute("WebApiTest.Controllers")] 
 namespace WebApi.Persistence;
 
 internal abstract class AGenericRepository<T> : IGenericRepository<T>
