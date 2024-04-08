@@ -1,3 +1,4 @@
+using System;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using WebApi.Controllers;
@@ -22,10 +23,10 @@ public class BaseControllerTest {
       IServiceCollection serviceCollection = new ServiceCollection();
       serviceCollection.AddPersistenceTest();
       serviceCollection.AddControllersTest();
-      ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider()
+      var serviceProvider = serviceCollection.BuildServiceProvider()
          ?? throw new Exception("Failed to build Serviceprovider");
 
-      DataContext dbContext = serviceProvider.GetRequiredService<DataContext>()
+      var dbContext = serviceProvider.GetRequiredService<DataContext>()
          ?? throw new Exception("Failed to create an instance of DataContext");
       dbContext.Database.EnsureDeleted();
       dbContext.Database.EnsureCreated();

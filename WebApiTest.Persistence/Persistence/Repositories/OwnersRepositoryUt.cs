@@ -1,24 +1,13 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
 using FluentAssertions.Equivalency;
-using Microsoft.Extensions.DependencyInjection;
-using WebApi.Core;
 using WebApi.Core.DomainModel.Entities;
-using WebApi.Persistence;
-using WebApiTest.Di;
-
 namespace WebApiTest.Persistence.Repositories;
 [Collection(nameof(SystemTestCollectionDefinition))]
-public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
-
-   private Owner _owner1 = new(){
-      Id = new Guid("10000000-0000-0000-0000-000000000000"),
-      Name = "Erika Mustermann",
-      Birthdate = new DateTime(1988, 2, 1).ToUniversalTime(),
-      Email = "erika.mustermann@t-online.de"
-   };
+public  class OwnersRepositoryUt: BaseRepositoryUt {
    
-   public OwnersBaseRepositoryUt(): base(){ }
-
    private void ShowRepository(string text){
 #if DEBUG
       _dataContext.LogChangeTracker(text);
@@ -96,6 +85,7 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
       // Act
       var actual = 
          await _ownersRepository.FilterByAsync(o => o.Email.Contains("gmail"));   
+      
       // Assert
       ShowRepository("FilterByEmail");
       actual.Should()
@@ -120,6 +110,7 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
             o.Email.Contains("gmail") &&
             o.Birthdate >= birthdateMin &&
             o.Birthdate <= birthdateMax);   
+      
       // Assert
       ShowRepository("FilterByEmailAndBirthdate");
       actual.Should()
@@ -137,6 +128,7 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
       
       // Act
       var actual = await _ownersRepository.FindByIdAsync(_seed.Owner1.Id);
+      
       // Assert
       ShowRepository("FindByIdAsync");
       actual.Should()
@@ -155,6 +147,7 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
       // Act
       var actual = await _ownersRepository.FindByAsync(o => 
          o.Name.Contains("Max"));   
+      
       // Assert
       ShowRepository("FindByIdName");
       actual.Should()
@@ -173,6 +166,7 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
       // Act
       var actual = await _ownersRepository.FindByAsync(o => 
          o.Birthdate == expected.Birthdate);   
+      
       // Assert
       ShowRepository("FindByBirthdate");
       actual.Should()
@@ -233,8 +227,9 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
       _dataContext.ClearChangeTracker();
       
       // Assert
-      Owner? actual = await _ownersRepository.FindByIdAsync(owner.Id);
-      actual.Should().BeEquivalentTo<Owner>(owner);
+      var actual = await _ownersRepository.FindByIdAsync(owner.Id);
+      ShowRepository("AddUt");
+      actual.Should().BeEquivalentTo(owner);
    }
    
    [Fact]
@@ -249,6 +244,7 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
       
       // Assert                         with tracking
       var actual = await _ownersRepository.SelectAsync(true);   
+      ShowRepository("AddRangeUt");
       actual.Should().NotBeNull()
          .And.NotBeEmpty()
          .And.HaveCount(6)
@@ -260,6 +256,7 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
       // Arrange
       await _arrangeTest.OwnersAsync(_seed);
       var expected = _seed.Owner1;
+      
       // Act
       var updatedOwner = new Owner {
          Id = expected.Id,
@@ -269,21 +266,44 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
       };
       await _ownersRepository.UpdateAsync(updatedOwner);
       await _dataContext.SaveAllChangesAsync();
+      
       // Assert
-      var actual = await _ownersRepository.FindByIdAsync(updatedOwner.Id);
-      actual.Should().BeEquivalentTo<Owner>(updatedOwner);
+      var actual = 
+         await _ownersRepository.FindByIdAsync(updatedOwner.Id);
+      ShowRepository("UpdateUt");
+      actual.Should().BeEquivalentTo(updatedOwner);
+   }
+   
+   [Fact]
+   public async Task RemoveUt() {
+      // Arrange
+      await _arrangeTest.OwnersAsync(_seed);
+      
+      // Act
+      _ownersRepository.Remove(_seed.Owner1);
+      await _dataContext.SaveAllChangesAsync();
+      
+      // Assert
+      var actual = 
+         await _ownersRepository.FindByIdAsync(_seed.Owner1.Id);
+      ShowRepository("RemoveUt");
+      actual.Should().BeNull();
    }
    #endregion
    
    #region with accounts
    [Fact]
    public async Task FilterByJoinWithTracking_WithoutJoinAsyncUt() {
+   
       // Arrange
       await _arrangeTest.OwnersWithAccountsAsync(_seed);
+    
       // Act  with tracking
-      IEnumerable<Owner> actual = 
+      var actual = 
          await _ownersRepository.FilterByJoinAsync(null, false, true);
+     
       // Assert
+      ShowRepository("FilterByJoinWithTracking_WithoutJoinAsyncUt");
       actual.Should()
          .NotBeNull().And
          .NotBeEmpty().And
@@ -297,6 +317,7 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
       owners[4].Accounts.Should().HaveCount(0);
       owners[5].Accounts.Should().HaveCount(0);
    }
+
    [Fact]
    public async Task FilterByJoinAsync_WithTracking_WithJoinUt() {
       
@@ -305,16 +326,15 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
       var expected = _seed.Owners;
       
       // Act  with tracking
-      var actual = await _ownersRepository.FilterByJoinAsync(null, true, true);
+      var actual = 
+         await _ownersRepository.FilterByJoinAsync(null, true, true);
 
       // Assert
-      _dataContext.LogChangeTracker("FilterByJoinAsync_WithTracking_WithJoinUt");
+      ShowRepository("FilterByJoinAsync_WithTracking_WithJoinUt");
       actual.Should()
          .NotBeNull().And
-         .NotBeEmpty().And
          .HaveCount(6).And
          .BeOfType<List<Owner>>();
-     
      actual.Should().BeEquivalentTo(expected, options => {
         options.For(owner => owner.Accounts).Exclude(accout => accout.Owner);
         options.IgnoringCyclicReferences(); 
@@ -340,10 +360,9 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
          .FilterByJoinAsync(o => o.Id ==_seed.Owner1.Id, true, true);
       
       // Assert
-      _dataContext.LogChangeTracker("FilterByOwner1JoinAsync_WithTracking_WithJoinUt");
+      ShowRepository("FilterByOwner1JoinAsync_WithTracking_WithJoinUt");
       actual.Should()
          .NotBeNull().And
-         .NotBeEmpty().And
          .HaveCount(1).And
          .BeOfType<List<Owner>>();
      
@@ -352,6 +371,22 @@ public  class OwnersBaseRepositoryUt: BaseRepositoryUt {
          options.IgnoringCyclicReferences(); 
          return options;
       });
+   }
+   
+   [Fact]
+   public async Task RemoveWithAccountsUt() {
+      // Arrange
+      await _arrangeTest.OwnersWithAccountsAsync(_seed);
+      
+      // Act
+      _ownersRepository.Remove(_seed.Owner1);
+      await _dataContext.SaveAllChangesAsync();
+      
+      // Assert
+      var actual = 
+         await _ownersRepository.FindByIdAsync(_seed.Owner1.Id);
+      ShowRepository("RemoveUt");
+      actual.Should().BeNull();
    }
    #endregion
 }

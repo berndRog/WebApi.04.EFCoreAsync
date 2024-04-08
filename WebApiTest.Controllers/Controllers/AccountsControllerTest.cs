@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,44 +12,11 @@ using WebApi.Core.Dto;
 using WebApi.Persistence;
 using WebApiTest.Di;
 using WebApiTest.Persistence;
+using Xunit;
 
 namespace WebApiTest.Controllers;
 [Collection(nameof(SystemTestCollectionDefinition))]
-public class AccountsControllerTest {
-
-   private readonly AccountsController _accountsController;
-   private readonly IOwnersRepository _ownersRepository;
-   private readonly IDataContext _dataContext;
-   private readonly ArrangeTest _arrangeTest;
-   private readonly IMapper _mapper;
-   private readonly Seed _seed;
-
-   public AccountsControllerTest() {
-
-      IServiceCollection serviceCollection = new ServiceCollection();
-      serviceCollection.AddPersistenceTest();
-      serviceCollection.AddControllersTest();
-      ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider()
-         ?? throw new Exception("Failed to build Serviceprovider");
-
-      DataContext dbContext = serviceProvider.GetRequiredService<DataContext>()
-         ?? throw new Exception("Failed to create an instance of AppDbContext");
-      dbContext.Database.EnsureDeleted();
-      dbContext.Database.EnsureCreated();
-      
-      _dataContext = serviceProvider.GetRequiredService<IDataContext>() 
-         ?? throw new Exception("Failed to create an instance of IDataContext");
-      
-      _ownersRepository = serviceProvider.GetRequiredService<IOwnersRepository>()
-         ?? throw new Exception("Failed to create an instance of IOwnersRepository");
-      _accountsController = serviceProvider.GetRequiredService<AccountsController>()
-         ?? throw new Exception("Failed to create an instance of AccountsController");
-
-      _arrangeTest = serviceProvider.GetRequiredService<ArrangeTest>()
-         ?? throw new Exception("Failed create an instance of CArrangeTest");
-      _mapper = serviceProvider.GetRequiredService<IMapper>();
-      _seed = new Seed();
-   }
+public class AccountsControllerTest :BaseControllerTest {
 
    [Fact]
    public async Task GetTest() {
@@ -53,16 +24,17 @@ public class AccountsControllerTest {
       await _arrangeTest.Owner1WithAccountsAsync(_seed);
       var expected = new List<AccountDto> {
          _mapper.Map<AccountDto>(_seed.Account1),
-         _mapper.Map<AccountDto>(_seed.Account2),
+         _mapper.Map<AccountDto>(_seed.Account2)
       };
      
       // Act
-      ActionResult<IEnumerable<AccountDto>> response =
-         await _accountsController.GetAccountsByOwnerId(_seed.Owner1.Id);
+      var response = await _accountsController.GetAccountsByOwnerId(_seed.Owner1.Id);
       
       // Assert
       var (success, result, value) =
          Helper.ResultFromResponse<OkObjectResult, IEnumerable<AccountDto>>(response);
+      success.Should().BeTrue();
+      
       result.StatusCode.Should().Be(200);
       value.Should().NotBeNull().And
          .HaveCount(2);
@@ -74,15 +46,16 @@ public class AccountsControllerTest {
    public async Task GetByIdTest() {
       // Arrange
       await _arrangeTest.Owner1WithAccountsAsync(_seed);
-      AccountDto expected = _mapper.Map<AccountDto>(_seed.Account1);
+      var expected = _mapper.Map<AccountDto>(_seed.Account1);
       
       // Act
-      ActionResult<AccountDto?> response = 
-         await _accountsController.GetAccountById(_seed.Account1.Id);
+      var response = await _accountsController.GetAccountById(_seed.Account1.Id);
       
       // Assert
       var (success, result, value) =
          Helper.ResultFromResponse<OkObjectResult, AccountDto>(response!);
+      success.Should().BeTrue();
+      
       result.StatusCode.Should().Be(200);
       value.Should().NotBeNull().And
          .BeEquivalentTo(expected);
@@ -93,13 +66,16 @@ public class AccountsControllerTest {
       // Arrange
       await _arrangeTest.OwnersWithAccountsAsync(_seed);
       var account6Dto = _mapper.Map<AccountDto>(_seed.Account6);
+      
       // Act
-      ActionResult<AccountDto?> response = 
-         await _accountsController.GetAccountByIban("DE50 10000000 0000000000");
+      var response = await _accountsController.GetAccountByIban("DE50 10000000 0000000000");
+      
       // Assert
       response.Should().NotBeNull();
       var (success, result, value) =
          Helper.ResultFromResponse<OkObjectResult, AccountDto>(response!);
+      success.Should().BeTrue();
+      
       result.StatusCode.Should().Be(200);
       value.Should().NotBeNull().And
          .BeEquivalentTo(account6Dto);
@@ -109,14 +85,17 @@ public class AccountsControllerTest {
    public async Task GetByAccountByIdNotFoundTest() {
       // Arrange
       await _arrangeTest.Owner1WithAccountsAsync(_seed);
-      Guid idError = new Guid("12345678-0000-0000-0000-000000000000");
+      var idError = new Guid("12345678-0000-0000-0000-000000000000");
+      
       // Act
-      ActionResult<AccountDto?> response =
-         await _accountsController.GetAccountById(idError);
+      var response = await _accountsController.GetAccountById(idError);
+      
       // Assert
       response.Should().NotBeNull();
       var (success, result, value) =
          Helper.ResultFromResponse<NotFoundObjectResult, AccountDto>(response!);
+      success.Should().BeFalse();
+      
       result.StatusCode.Should().Be(404);
    }
    
@@ -126,20 +105,22 @@ public class AccountsControllerTest {
       _ownersRepository.Add(_seed.Owner1);
       await _dataContext.SaveAllChangesAsync();
       _dataContext.ClearChangeTracker();   
-      AccountDto account1Dto = _mapper.Map<AccountDto>(_seed.Account1);
+      var account1Dto = _mapper.Map<AccountDto>(_seed.Account1);
       
       // Act
-      ActionResult<AccountDto> response =
-         await _accountsController.CreateAccount(_seed.Owner1.Id, account1Dto);
+      var response = await _accountsController.CreateAccount(_seed.Owner1.Id, account1Dto);
       
       // Assert
       var (success, result, value) =
          Helper.ResultFromResponse<CreatedResult, AccountDto>(response);
+      success.Should().BeTrue();
+      
       result.StatusCode.Should().Be(201);
       account1Dto = account1Dto with { OwnerId=_seed.Owner1.Id};
       value.Should().NotBeNull().And
          .BeEquivalentTo(account1Dto);
    }
+   
    [Fact]
    public async Task CreateAccountConflictTest() {
       // Arrange
@@ -147,14 +128,17 @@ public class AccountsControllerTest {
       await _dataContext.SaveAllChangesAsync();
       _dataContext.ClearChangeTracker();   
       _seed.Owner1.Add(_seed.Account1);
-      AccountDto account1Dto = _mapper.Map<AccountDto>(_seed.Account1);
+      var account1Dto = _mapper.Map<AccountDto>(_seed.Account1);
       await _accountsController.CreateAccount(_seed.Owner1.Id, account1Dto);
+     
       // Act
-      ActionResult<AccountDto> response
-         = await _accountsController.CreateAccount(_seed.Owner1.Id, account1Dto);
+      var response = await _accountsController.CreateAccount(_seed.Owner1.Id, account1Dto);
+    
       // Assert
       var (success, result, value) = 
          Helper.ResultFromResponse<ConflictObjectResult, AccountDto>(response);
+      success.Should().BeFalse();
+      
       result.StatusCode.Should().Be(409);
    }
 }

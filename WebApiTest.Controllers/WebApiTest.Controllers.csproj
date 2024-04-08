@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>WebApiTest</RootNamespace>
     <Nullable>enable</Nullable>
-
+    <ImplicitUsings>disble</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
@@ -21,11 +21,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
-  <ItemGroup>
-    <Using Include="Xunit"/>
-  </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\WebApi.Controllers\WebApi.Controllers.csproj" />
     <ProjectReference Include="..\WebApi.Core\WebApi.Core.csproj" />

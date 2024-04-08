@@ -11,15 +11,27 @@ using WebApi.Core.DomainModel.Entities;
 [assembly: InternalsVisibleTo("WebApiTest")]
 [assembly: InternalsVisibleTo("WebApiTest.Persistence")]
 [assembly: InternalsVisibleTo("WebApiTest.Controllers")]
+[assembly: InternalsVisibleTo("WebApiTest.Controllers.EndToEnd")]
 namespace WebApi.Persistence; 
 internal class DataContext: DbContext, IDataContext  {
 
    #region fields
    private readonly ILogger<DataContext>? _logger;
-   public DbSet<Owner> Owners => Set<Owner>();
-   public DbSet<Account> Accounts => Set<Account>();
    #endregion
-
+   
+   #region properties
+   // Repository pattern
+   public DbSet<Owner> Owners {
+      get => Set<Owner>();  // call to a method, not a field 
+   }
+   public DbSet<Account> Accounts {
+      get => Set<Account>(); 
+   }
+   // Note that DbContext caches the instance of DbSet returned from the
+   // Set method so that each of these properties will return the same
+   // instance every time it is called.
+   #endregion
+   
    #region ctor
    // ctor for migration only
    public DataContext(DbContextOptions<DataContext> options) : base(options) { }
@@ -70,16 +82,16 @@ internal class DataContext: DbContext, IDataContext  {
    ) {
 
       // read active database configuration from appsettings.json
-      string useDatabase = configuration.GetSection("UseDatabase").Value ??
+      var useDatabase = configuration.GetSection("UseDatabase").Value ??
          throw new Exception("UseDatabase is not available");
 
       // read connection string from appsettings.json
-      string connectionString = configuration.GetSection("ConnectionStrings")[useDatabase]
+      var connectionString = configuration.GetSection("ConnectionStrings")[useDatabase]
          ?? throw new Exception("ConnectionStrings is not available"); 
       
       // /users/documents/WebApi
-      string directory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-      string pathDocuments = Path.Combine(directory,"WebApi");
+      var directory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+      var pathDocuments = Path.Combine(directory,"WebApi");
       Directory.CreateDirectory(pathDocuments);
       
       switch (useDatabase) {
@@ -89,6 +101,8 @@ internal class DataContext: DbContext, IDataContext  {
                $"Data Source = (LocalDB)\\MSSQLLocalDB; " +
                $"Initial Catalog = {connectionString}; Integrated Security = True; " +
                $"AttachDbFileName = {dbFile};";
+            Console.WriteLine($"==> EvalDatabaseConfiguration: LocalDb {dataSourceLocalDb}");
+            Console.WriteLine();
             return (useDatabase, dataSourceLocalDb);
 
          case "SqlServer":
@@ -97,11 +111,13 @@ internal class DataContext: DbContext, IDataContext  {
          case "Sqlite":
             var dataSourceSqlite =
                "Data Source=" + Path.Combine(pathDocuments, connectionString) + ".db";
+            Console.WriteLine($"==> EvalDatabaseConfiguration: Sqite {dataSourceSqlite}");
+            Console.WriteLine();
+
             return (useDatabase, dataSourceSqlite);
          default:
             throw new Exception("appsettings.json Problems with database configuration");
-      }
-   }
+      }   }
    #endregion
    
 }

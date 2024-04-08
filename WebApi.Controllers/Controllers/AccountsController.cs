@@ -20,13 +20,11 @@ public class AccountsController(
    IMapper mapper,
    ILogger<AccountsController> logger
 ) : ControllerBase {
-
-   
    // Get all accounts of a given owner as Dto
    // http://localhost:5010/banking/owners/{ownerId:Guid}/accounts
-   [HttpGet("owners/{ownerId:Guid}/accounts")]
+   [HttpGet("owners/{ownerId:guid}/accounts")]
    public async Task<ActionResult<IEnumerable<AccountDto>>> GetAccountsByOwnerId(
-      Guid ownerId
+      [FromRoute] Guid ownerId
    ) {
       logger.LogDebug("GetAccountsByOwner ownerId={ownerId}", ownerId);
       
@@ -40,40 +38,40 @@ public class AccountsController(
 
    // Get account by Id
    // http://localhost:5010/banking/accounts/{id}
-   [HttpGet("accounts/{id:Guid}")]
-   public async Task<ActionResult<AccountDto?>> GetAccountById(Guid id) {
+   [HttpGet("accounts/{id:guid}")]
+   public async Task<ActionResult<AccountDto?>> GetAccountById(
+      [FromRoute] Guid id
+   ) {
       logger.LogDebug("GetAccountById id={id}", id);
-      
-      switch (await accountsRepository.FindByIdAsync(id)) {   
+
+      return await accountsRepository.FindByIdAsync(id) switch {
          // return account as Dto
-         case Account account: 
-            return Ok(mapper.Map<AccountDto>(account));
+         { } account => Ok(mapper.Map<AccountDto>(account)),
          // return not found
-         case null:            
-            return NotFound("Account with given Id not found");
-      }
+         null => NotFound("Account with given Id not found")
+      };
    }
 
    // Get account by IBAN as Dto
-   // http://localhost:5010/banking/accounts/iban/{iban}
-   [HttpGet("accounts/iban/{iban}")]
-   public async Task<ActionResult<AccountDto?>> GetAccountByIban(string iban) {
+   // http://localhost:5010/banking/accounts/iban?iban=abc
+   [HttpGet("accounts/iban")]
+   public async Task<ActionResult<AccountDto?>> GetAccountByIban(
+      [FromQuery] string iban
+   ) {
       logger.LogDebug("GetAccountByIban iban={iban}", iban);
 
-//    switch (await accountsRepository.FindByIbanAsync(iban)) {
-      switch (await accountsRepository.FindByAsync(a => a.Iban == iban)) {
+//                 accountsRepository.FindByIbanAsync(iban)) {
+      return await accountsRepository.FindByAsync(a => a.Iban == iban) switch {
          // return account as Dto
-         case Account account: 
-            return Ok(mapper.Map<AccountDto>(account));
+         { } account => Ok(mapper.Map<AccountDto>(account)),
          // return not found
-         case null:            
-            return NotFound("Account with given Id not found");
-      }
+         null => NotFound("Account with given Id not found")
+      };
    }
-   
+
    // Create a new account for a given owner
    // http://localhost:5010/banking/owner/{ownerId}/accounts
-   [HttpPost("owners/{ownerId:Guid}/accounts")]
+   [HttpPost("owners/{ownerId:guid}/accounts")]
    public async Task<ActionResult<AccountDto>> CreateAccount(
       [FromRoute] Guid ownerId,
       [FromBody]  AccountDto accountDto
@@ -81,7 +79,7 @@ public class AccountsController(
       logger.LogDebug("CreateAccount iban={iban}", accountDto.Iban);
       
       // map Dto to DomainModel
-      Account account = mapper.Map<Account>(accountDto);
+      var account = mapper.Map<Account>(accountDto);
       
       // check if ownerId exists
       var owner = await ownersRepository.FindByIdAsync(ownerId);
@@ -107,10 +105,10 @@ public class AccountsController(
       var uri = new Uri(path, UriKind.Relative);
       return Created(uri, mapper.Map<AccountDto>(account));     
    }
-   
+
    // Delete an account for a given owner
    // http://localhost:5100/banking/owner/{ownerId}/accounts
-   [HttpDelete("owners/{ownerId:Guid}/accounts/{id}")]
+   [HttpDelete("owners/{ownerId:guid}/accounts/{id:guid}")]
    public async Task<IActionResult> DeleteAccount(
       [FromRoute] Guid ownerId,
       [FromRoute] Guid id

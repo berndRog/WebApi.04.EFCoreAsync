@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using FluentAssertions;
+﻿using FluentAssertions;
 using WebApi.Core.Dto;
-using WebApi.Core.Mapping;
 namespace WebApiTest.Core.Dto;
 
 public class OwnerDtoUt {

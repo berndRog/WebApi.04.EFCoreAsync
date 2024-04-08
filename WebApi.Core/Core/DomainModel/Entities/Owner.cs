@@ -6,22 +6,16 @@ namespace WebApi.Core.DomainModel.Entities;
 public class Owner: AEntity {
    
    #region properties
-   public override Guid Id  { get; init; } = Guid.Empty;
+   public override Guid Id  { get; init; } = Guid.NewGuid();
    public string   Name     { get; set; } = string.Empty;
    public DateTime Birthdate{ get; init; } = DateTime.UtcNow;
    public string   Email    { get; set; } = string.Empty;
 
    // Navigation property
    // One-to-many relationship Owner -> Account
-   public ICollection<Account> Accounts { get; set; } = new List<Account>();
+   public ICollection<Account> Accounts { get; init; } = new List<Account>();
    #endregion
-   
-   #region ctor
-   public Owner(): base() {
-      Id = Guid.NewGuid();
-   }
-   #endregion
-   
+
    #region methods
    public void Update (string name, string email) {
       Name = name;
@@ -36,5 +30,4 @@ public class Owner: AEntity {
       Accounts.Add(account);
    }
    #endregion
-   
 }

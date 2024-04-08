@@ -1,7 +1,5 @@
-﻿using WebApi.Core;
-using WebApi.Core.DomainModel.Entities;
-using WebApi.Core.Misc;
-
+﻿using System.Threading.Tasks;
+using WebApi.Core;
 namespace WebApiTest.Persistence;
 public class ArrangeTest(
    IOwnersRepository ownersRepository,

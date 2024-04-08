@@ -1,8 +1,7 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using WebApi.Core.DomainModel.Entities;
-using WebApiTest;
-
-namespace WebApi.Test.Core.DomainModel.Entities;
+namespace WebApiTest.Core.DomainModel.Entities;
 public class OwnerUt {
 
    private readonly Seed _seed;
@@ -16,7 +15,7 @@ public class OwnerUt {
    public void Ctor() {
       // Arrange
       // Act
-      var actual = new Owner();
+      Owner actual = new ();
       // Assert
       actual.Should().NotBeNull();
       actual.Should().BeOfType<Owner>();
@@ -26,7 +25,7 @@ public class OwnerUt {
    public void ObjectInitializerUt() {
       // Arrange
       // Act
-      var actual = new Owner {
+      Owner actual = new () {
          Id = _seed.Owner1.Id,
          Name = _seed.Owner1.Name,
          Birthdate = _seed.Owner1.Birthdate,
@@ -43,7 +42,7 @@ public class OwnerUt {
    [Fact]
    public void GetterUt() {
       // Arrange
-      var actual = new Owner {
+      Owner actual = new () {
          Id = _seed.Owner1.Id,
          Name = _seed.Owner1.Name,
          Birthdate = _seed.Owner1.Birthdate,
@@ -64,13 +63,13 @@ public class OwnerUt {
    [Fact]
    public void SetterUt() {
       // Arrange
-      Owner actual = new Owner {
+      Owner actual = new ()  {
          Id = _seed.Owner1.Id,
-         Birthdate = _seed.Owner1.Birthdate
+         Birthdate = _seed.Owner1.Birthdate,
+         // Act
+         Name = _seed.Owner1.Name,
+         Email = _seed.Owner1.Email
       };
-      // Act
-      actual.Name = _seed.Owner1.Name;
-      actual.Email = _seed.Owner1.Email;
       // Assert
       actual.Id.Should().Be(_seed.Owner1.Id);
       actual.Name.Should().Be(_seed.Owner1.Name);

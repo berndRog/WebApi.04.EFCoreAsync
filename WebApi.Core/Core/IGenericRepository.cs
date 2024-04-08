@@ -6,8 +6,6 @@ using WebApi.Core.DomainModel.Entities;
 namespace WebApi.Core; 
 
 public interface IGenericRepository<T> where T : AEntity {
-
-   T? Attach(T item);
    
    // read from database?
    Task<IEnumerable<T>> SelectAsync   (bool withTracking = false);

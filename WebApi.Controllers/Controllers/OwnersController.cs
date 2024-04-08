@@ -37,56 +37,50 @@ public class OwnersController(
    
    // Get owner by Id as Dto
    // http://localhost:5100/banking/owners/{id}
-   [HttpGet("{id}")]
+   [HttpGet("{id:guid}")]
    public async Task<ActionResult<OwnerDto>> GetOwnerById(
       [FromRoute] Guid id
    ) {
       logger.LogDebug("GetOwnerById() id={id}", id.As8());
-      switch (await ownersRepository.FindByIdAsync(id)) {
+      return await ownersRepository.FindByIdAsync(id) switch {
          // return owner as Dto
-         case Owner owner: 
-            return Ok(mapper.Map<OwnerDto>(owner));
+         { } owner => Ok(mapper.Map<OwnerDto>(owner)),
          // return not found
-         case null:        
-            return NotFound("Owner with given Id not found");
-      }
+         null => NotFound("Owner with given Id not found")
+      };
    }
 
    // Get owners by name as Dto
-   // http://localhost:5100/banking/owners/name
+   // http://localhost:5100/banking/owners/name?name=abc
    [HttpGet("name")]
    public async Task<ActionResult<IEnumerable<OwnerDto>>> GetOwnersByName(
       [FromQuery] string name
    ) {
       logger.LogDebug("GetOwnersByName() name={name}", name);
-   // switch (await ownersRepository.SelectByNameAsync(name)) {
-      switch (await ownersRepository.FilterByAsync(o => o.Name.Contains(name))) {
-         // return owners as Dtos
-         case IEnumerable<Owner> owners: 
-            return Ok(mapper.Map<IEnumerable<Owner>, IEnumerable<OwnerDto>>(owners));
+      
+      //     await ownersRepository.SelectByNameAsync(name)) switch {
+      return await ownersRepository.FilterByAsync(o => o.Name.Contains(name)) switch {
+        // return owners as Dtos
+         { } owners => Ok(mapper.Map<IEnumerable<OwnerDto>>(owners)),
          // return not found
-         case null:
-            return NotFound("Owners with given name not found");
-      }
+         null => NotFound("Owners with given name not found")
+      };
    }
 
    // Get owner by email as Dto
-   // http://localhost:5100/banking/owners/email
-   [HttpGet("owners/email")]
+   // http://localhost:5100/banking/owners/email?email=abc
+   [HttpGet("email")]
    public async Task<ActionResult<OwnerDto?>> GetOwnerByEmail(
       [FromQuery] string email
    ) {
-
-   // switch (await ownersRepository.FindByEmailAsync(email)) { 
-      switch (await ownersRepository.FindByAsync(o => o.Email == email)) {
-
+      logger.LogDebug("GetOwnersByName() email={email}", email);
+      
+      return await ownersRepository.FindByAsync(o => o.Email == email) switch {
          // return owner as Dto
-         case Owner owner: 
-            return Ok(mapper.Map<OwnerDto>(owner));
+         { } owner => Ok(mapper.Map<OwnerDto>(owner)),
          // return not found
-         case null:        
-            return NotFound("Owner with given email not found");
-      }
+         null => NotFound("Owner with given email not found")
+      };
    }
 
    // Get owners by birthdate as Dtos
@@ -117,7 +111,7 @@ public class OwnersController(
    }
    
    // Convert string in German format dd.MM.yyyy to DateTime
-   private (bool, DateTime) ConvertToDateTime(string date) {
+   private static (bool, DateTime) ConvertToDateTime(string date) {
       try {
          var dateTime = DateTime.ParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture);
          return (false, dateTime );
@@ -155,7 +149,7 @@ public class OwnersController(
    
    // Update owner
    // http://localhost:5100/banking/owners/{id}
-   [HttpPut("{id:Guid}")] 
+   [HttpPut("{id:guid}")] 
    public async Task<ActionResult<OwnerDto>> UpdateOwner(
       [FromRoute] Guid id,
       [FromBody]  OwnerDto updOwnerDto
@@ -169,7 +163,7 @@ public class OwnersController(
          return BadRequest("UpdateOwner: Id in the route and body do not match.");
       
       // check if owner with given Id exists
-      Owner? owner = await ownersRepository.FindByIdAsync(id);
+      var owner = await ownersRepository.FindByIdAsync(id);
       if (owner == null)
          return NotFound("UpdateOwner: Owner with given id not found.");
 
@@ -187,7 +181,7 @@ public class OwnersController(
    
    // Delete owner
    // http://localhost:5100/banking/owners/{id}
-   [HttpDelete("{id:Guid}")] 
+   [HttpDelete("{id:guid}")] 
    public async Task<IActionResult> DeleteOwner(
       [FromRoute] Guid id
    ) {

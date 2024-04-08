@@ -1,8 +1,6 @@
 ﻿using FluentAssertions;
 using WebApi.Core.Dto;
-using WebApiTest;
-
-namespace WebApi.Test.Core.Dto;
+namespace WebApiTest.Core.Dto;
 public class AccountDtoUt {
 
    private readonly Seed _seed;

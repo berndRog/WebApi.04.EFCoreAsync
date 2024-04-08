@@ -1,11 +1,13 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using WebApi.Core;
 using WebApi.Di;
 using WebApi.Persistence;
 using WebApiTest.Di;
 namespace WebApiTest.Persistence.Repositories;
-
+[Collection(nameof(SystemTestCollectionDefinition))]
 public abstract class BaseRepositoryUt {
+   
    protected readonly IOwnersRepository _ownersRepository;
    protected readonly IAccountsRepository _accountsRepository;
    protected readonly IDataContext _dataContext;
@@ -16,11 +18,11 @@ public abstract class BaseRepositoryUt {
       IServiceCollection services = new ServiceCollection();
       services.AddCore();
       services.AddPersistenceTest();
-      ServiceProvider serviceProvider = services.BuildServiceProvider()
+      var serviceProvider = services.BuildServiceProvider()
          ?? throw new Exception("Failed to create an instance of ServiceProvider");
 
       //-- Service Locator    
-      DataContext dbContext = serviceProvider.GetRequiredService<DataContext>()
+      var dbContext = serviceProvider.GetRequiredService<DataContext>()
          ?? throw new Exception("Failed to create CDbContext");
       dbContext.Database.EnsureDeleted();
       dbContext.Database.EnsureCreated();

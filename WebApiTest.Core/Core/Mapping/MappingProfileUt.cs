@@ -35,7 +35,7 @@ public class MappingProfileUt {
    [Fact]
    public void OwnerDto2OwnerUt() {
       // Arrange
-      OwnerDto ownerDto = _mapper.Map<OwnerDto>(_seed.Owner1);
+      var ownerDto = _mapper.Map<OwnerDto>(_seed.Owner1);
       // Act
       var actualOwner = _mapper.Map<Owner>(ownerDto);
       // Assert
@@ -63,7 +63,7 @@ public class MappingProfileUt {
    [Fact]
    public void AccountDto2AccountUt() {
       // Arrange
-      AccountDto accountDto = _mapper.Map<AccountDto>(_seed.Account1);
+      var accountDto = _mapper.Map<AccountDto>(_seed.Account1);
       // Act
       var actual = _mapper.Map<Account>(accountDto);
       // Assert

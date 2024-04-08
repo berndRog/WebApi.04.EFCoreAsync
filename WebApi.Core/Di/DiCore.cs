@@ -4,7 +4,7 @@ using WebApi.Core.DomainModel.Entities;
 using WebApi.Core.Mapping;
 namespace WebApi.Di; 
 public static class DiCore {
-   public static IServiceCollection AddCore(
+   public static void AddCore(
       this IServiceCollection services
    ){
       services.AddAutoMapper(typeof(Owner), typeof(MappingProfile));
@@ -12,7 +12,5 @@ public static class DiCore {
       var mapperConfig = new MapperConfiguration(config => {
          config.AddProfile(new MappingProfile());
       });
-      
-      return services;
    }
 }

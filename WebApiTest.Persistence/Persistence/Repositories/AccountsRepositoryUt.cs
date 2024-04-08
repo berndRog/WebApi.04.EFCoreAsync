@@ -1,16 +1,14 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
 using FluentAssertions.Equivalency;
-using Microsoft.Extensions.DependencyInjection;
-using WebApi.Core;
 using WebApi.Core.DomainModel.Entities;
-using WebApi.Persistence;
 //using WebApiTest.Di;
 
 namespace WebApiTest.Persistence.Repositories;
 [Collection(nameof(SystemTestCollectionDefinition))]
 public  class AccountsRepositoryUt: BaseRepositoryUt {
-
-   public AccountsRepositoryUt(): base(){ }
    
    #region Owners <-> Accounts   
    private EquivalencyAssertionOptions<Account> ExcludeReferences(

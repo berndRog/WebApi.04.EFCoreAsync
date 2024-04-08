@@ -1,13 +1,11 @@
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using WebApi.Core;
 using WebApi.Core.DomainModel.Entities;
-
 [assembly: InternalsVisibleToAttribute("WebApiTest")]
 [assembly: InternalsVisibleToAttribute("WebApiTest.Persistence")]
 [assembly: InternalsVisibleToAttribute("WebApiTest.Controllers")] 
@@ -53,7 +51,7 @@ internal  class AccountsRepository(
       bool withTracking = false
    ) {
       // convert DbSet into an IQueryable
-      IQueryable<Account> query = DatabaseContext.Accounts;
+      IQueryable<Account> query = _dbContext.Accounts;
       
       // switch off tracking if not needed
       if(!withTracking) query = query.AsNoTracking();
@@ -65,6 +63,6 @@ internal  class AccountsRepository(
       if(joinAccounts) query = query.Include(a => a.Owner);
       
       // eager evaluation of results
-      return await query.ToListAsync<Account>();
+      return await query.ToListAsync();
    }
 }

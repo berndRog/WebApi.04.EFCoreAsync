@@ -6,12 +6,12 @@ using WebApi.Di;
 
 namespace WebApi;
 
-public static class Program {
+public class Program {
 
    static void Main(string[] args) {
 
       // WebApplication Builder Pattern
-      WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+      var builder = WebApplication.CreateBuilder(args);
       
       // Configure logging
       // ---------------------------------------------------------------------
@@ -41,7 +41,7 @@ public static class Program {
       
       // Build the WebApplication
       // -------------------------------------------------------------------
-      WebApplication app = builder.Build();
+      var app = builder.Build();
       // use http logging
       app.UseHttpLogging();
       // routing

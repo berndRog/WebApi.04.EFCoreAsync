@@ -1,14 +1,15 @@
+using System;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using WebApi.Controllers;
 using WebApi.Core;
 using WebApi.Persistence;
-using WebApiTest.Di;
-using WebApiTest.Persistence;
+//using WebApiTest.Di;
+//using WebApiTest.Persistence;
 namespace WebApiTest.Controllers;
 
 public class BaseControllerTest {
-
+/*
    protected readonly AccountsController _accountsController;
    protected readonly OwnersController _ownersController;
    protected readonly IOwnersRepository _ownersRepository;
@@ -22,10 +23,10 @@ public class BaseControllerTest {
       IServiceCollection serviceCollection = new ServiceCollection();
       serviceCollection.AddPersistenceTest();
       serviceCollection.AddControllersTest();
-      ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider()
+      var serviceProvider = serviceCollection.BuildServiceProvider()
          ?? throw new Exception("Failed to build Serviceprovider");
 
-      DataContext dbContext = serviceProvider.GetRequiredService<DataContext>()
+      var dbContext = serviceProvider.GetRequiredService<DataContext>()
          ?? throw new Exception("Failed to create an instance of DataContext");
       dbContext.Database.EnsureDeleted();
       dbContext.Database.EnsureCreated();
@@ -49,4 +50,5 @@ public class BaseControllerTest {
       _mapper = serviceProvider.GetRequiredService<IMapper>();
       _seed = new Seed();
    }
+   */
 }

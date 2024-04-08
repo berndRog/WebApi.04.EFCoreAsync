@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.IO;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,7 +12,7 @@ namespace WebApiTest.Di;
 
 public static class DiTestPersistence {
 
-   public static IServiceCollection AddPersistenceTest(
+   public static void AddPersistenceTest(
       this IServiceCollection services
    ) {
 
@@ -59,13 +61,12 @@ public static class DiTestPersistence {
             );
             break;
          default:
-            throw new Exception($"appsettings.json UseDatabase not available");
+            throw new Exception("appsettings.json UseDatabase not available");
       }
 
 //    services.AddPersistence(configuration);
       services.AddScoped<ArrangeTest>();
       services.AddScoped<Seed>();
-      
-      return services;
+
    }
 }

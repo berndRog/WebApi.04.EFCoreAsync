@@ -10,11 +10,11 @@ public static class Helper {
      where S : class {        // OwnerDto
       
       response.Result.Should().NotBeNull().And.BeOfType<T>();
-      T result = (response.Result as T)!; 
+      var result = (response.Result as T)!; 
       
       result.Value.Should().NotBeNull();
-      if (result.Value is S) {
-         S value = (result.Value as S)!;
+      if (result.Value is S resultValue) {
+         S value = resultValue;
          return (true, result, value); 
       }
       else {

@@ -1,8 +1,6 @@
-﻿using FluentAssertions;
-using FluentAssertions.Extensions;
-using WebApi.Core.Misc;
-
-namespace WebApi.Test.Core.Misc;
+﻿using System;
+using FluentAssertions;
+namespace WebApiTest.Core.Misc;
 
 public class DateTimeExtensionUt {
 
@@ -10,7 +8,7 @@ public class DateTimeExtensionUt {
    [Fact]
    public void ToUniversalTimeUt() {
       // Arrange
-      DateTime localNow = DateTime.Now;
+      var localNow = DateTime.Now;
       // Act
       var utcNow = localNow.ToUniversalTime();
       // Assert
@@ -23,7 +21,7 @@ public class DateTimeExtensionUt {
    [Fact]
    public void ToLocaLTimeUt() {
       // Arrange
-      DateTime utcNow = DateTime.UtcNow;
+      var utcNow = DateTime.UtcNow;
       // Act
       var localNow = utcNow.ToLocalTime();
       // Assert

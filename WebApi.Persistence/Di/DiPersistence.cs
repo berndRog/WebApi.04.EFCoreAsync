@@ -7,7 +7,7 @@ using WebApi.Persistence;
 namespace WebApi.Di;
 
 public static class DiPersistence {
-   public static IServiceCollection AddPersistence(
+   public static void AddPersistence(
       this IServiceCollection services,
       IConfiguration configuration
    ){
@@ -32,8 +32,5 @@ public static class DiPersistence {
          default:
             throw new Exception("appsettings.json UseDatabase not available");
       }
-      
-      return services;
-
    }
 }

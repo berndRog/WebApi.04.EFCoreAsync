@@ -59,7 +59,7 @@ internal class OwnersRepository(
       bool withTracking
    ) {
       // convert DbSet into an IQueryable
-      IQueryable<Owner> query = TypeDbSet;
+      IQueryable<Owner> query = _dbContext.Owners;
       
       // switch off tracking if not needed
       if(!withTracking)     query = query.AsNoTracking();
