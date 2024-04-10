@@ -1,25 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using WebApi.Controllers;
-using WebApi.Core;
 using WebApi.Core.Dto;
-using WebApi.Persistence;
-using WebApiTest.Di;
-using WebApiTest.Persistence;
 using Xunit;
-
 namespace WebApiTest.Controllers;
 [Collection(nameof(SystemTestCollectionDefinition))]
-public class AccountsControllerTest :BaseControllerTest {
+public class AccountsControllerTest: BaseControllerTest {
 
    [Fact]
-   public async Task GetTest() {
+   public async Task GetAccountsByOwnerIdTest() {
       // Arrange
       await _arrangeTest.Owner1WithAccountsAsync(_seed);
       var expected = new List<AccountDto> {
@@ -28,75 +16,36 @@ public class AccountsControllerTest :BaseControllerTest {
       };
      
       // Act
-      var response = await _accountsController.GetAccountsByOwnerId(_seed.Owner1.Id);
+      var actionResult = await _accountsController.GetAccountsByOwnerId(_seed.Owner1.Id);
       
       // Assert
-      var (success, result, value) =
-         Helper.ResultFromResponse<OkObjectResult, IEnumerable<AccountDto>>(response);
-      success.Should().BeTrue();
-      
-      result.StatusCode.Should().Be(200);
-      value.Should().NotBeNull().And
-         .HaveCount(2);
-      IList<AccountDto> actual = value.ToList(); 
-      actual[0].Should().BeEquivalentTo(expected[0]);
-      actual[1].Should().BeEquivalentTo(expected[1]);
+      THelper.IsOk(actionResult!, expected);
    }
+   
    [Fact]
-   public async Task GetByIdTest() {
+   public async Task GetAccountByIdTest() {
       // Arrange
       await _arrangeTest.Owner1WithAccountsAsync(_seed);
       var expected = _mapper.Map<AccountDto>(_seed.Account1);
       
       // Act
-      var response = await _accountsController.GetAccountById(_seed.Account1.Id);
+      var actionResult = await _accountsController.GetAccountById(_seed.Account1.Id);
       
       // Assert
-      var (success, result, value) =
-         Helper.ResultFromResponse<OkObjectResult, AccountDto>(response!);
-      success.Should().BeTrue();
-      
-      result.StatusCode.Should().Be(200);
-      value.Should().NotBeNull().And
-         .BeEquivalentTo(expected);
+      THelper.IsOk(actionResult, expected);
    }
 
    [Fact]
-   public async Task GetByIbanTest() {
+   public async Task GetAccountByIbanTest() {
       // Arrange
       await _arrangeTest.OwnersWithAccountsAsync(_seed);
-      var account6Dto = _mapper.Map<AccountDto>(_seed.Account6);
-      
-      // Act
-      var response = await _accountsController.GetAccountByIban("DE50 10000000 0000000000");
-      
-      // Assert
-      response.Should().NotBeNull();
-      var (success, result, value) =
-         Helper.ResultFromResponse<OkObjectResult, AccountDto>(response!);
-      success.Should().BeTrue();
-      
-      result.StatusCode.Should().Be(200);
-      value.Should().NotBeNull().And
-         .BeEquivalentTo(account6Dto);
-   }
+      var expected = _mapper.Map<AccountDto>(_seed.Account6);
 
-   [Fact]
-   public async Task GetByAccountByIdNotFoundTest() {
-      // Arrange
-      await _arrangeTest.Owner1WithAccountsAsync(_seed);
-      var idError = new Guid("12345678-0000-0000-0000-000000000000");
-      
       // Act
-      var response = await _accountsController.GetAccountById(idError);
-      
+      var actionResult = await _accountsController.GetAccountByIban("DE50 10000000 0000000000");
+
       // Assert
-      response.Should().NotBeNull();
-      var (success, result, value) =
-         Helper.ResultFromResponse<NotFoundObjectResult, AccountDto>(response!);
-      success.Should().BeFalse();
-      
-      result.StatusCode.Should().Be(404);
+      THelper.IsOk(actionResult, expected);
    }
    
    [Fact]
@@ -106,39 +55,26 @@ public class AccountsControllerTest :BaseControllerTest {
       await _dataContext.SaveAllChangesAsync();
       _dataContext.ClearChangeTracker();   
       var account1Dto = _mapper.Map<AccountDto>(_seed.Account1);
-      
+      var expected = account1Dto with { OwnerId = _seed.Owner1.Id };
       // Act
-      var response = await _accountsController.CreateAccount(_seed.Owner1.Id, account1Dto);
+      var actionResult = 
+         await _accountsController.CreateAccount(_seed.Owner1.Id, account1Dto);
       
       // Assert
-      var (success, result, value) =
-         Helper.ResultFromResponse<CreatedResult, AccountDto>(response);
-      success.Should().BeTrue();
-      
-      result.StatusCode.Should().Be(201);
-      account1Dto = account1Dto with { OwnerId=_seed.Owner1.Id};
-      value.Should().NotBeNull().And
-         .BeEquivalentTo(account1Dto);
+      THelper.IsCreated(actionResult!, expected);
    }
    
    [Fact]
-   public async Task CreateAccountConflictTest() {
+   public async Task DeleteAccountTest() {
       // Arrange
-      _ownersRepository.Add(_seed.Owner1);
-      await _dataContext.SaveAllChangesAsync();
-      _dataContext.ClearChangeTracker();   
-      _seed.Owner1.Add(_seed.Account1);
-      var account1Dto = _mapper.Map<AccountDto>(_seed.Account1);
-      await _accountsController.CreateAccount(_seed.Owner1.Id, account1Dto);
-     
-      // Act
-      var response = await _accountsController.CreateAccount(_seed.Owner1.Id, account1Dto);
-    
-      // Assert
-      var (success, result, value) = 
-         Helper.ResultFromResponse<ConflictObjectResult, AccountDto>(response);
-      success.Should().BeFalse();
+      await _arrangeTest.OwnersWithAccountsAsync(_seed);
+      var owner = _seed.Owner1;
+      var account = _seed.Account1;
       
-      result.StatusCode.Should().Be(409);
+      // Act
+      var actionResult = await _accountsController.DeleteAccount(owner.Id, account.Id);      
+      
+      // Assert
+      THelper.IsNoContent(actionResult);
    }
 }

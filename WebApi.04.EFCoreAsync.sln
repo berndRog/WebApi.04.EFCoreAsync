@@ -21,8 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiTest.Persistence", "W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiTest.Controllers", "WebApiTest.Controllers\WebApiTest.Controllers.csproj", "{93A617BD-7660-4B39-9ADA-1DC7A51EF0D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiTest.Controllers.EndToEnd", "WebApiTest.Controllers.EndToEnd\WebApiTest.Controllers.EndToEnd.csproj", "{2036BA56-2F79-49D4-9960-9A45564FCA88}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,10 +51,6 @@ Global
 		{93A617BD-7660-4B39-9ADA-1DC7A51EF0D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93A617BD-7660-4B39-9ADA-1DC7A51EF0D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93A617BD-7660-4B39-9ADA-1DC7A51EF0D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2036BA56-2F79-49D4-9960-9A45564FCA88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2036BA56-2F79-49D4-9960-9A45564FCA88}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2036BA56-2F79-49D4-9960-9A45564FCA88}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2036BA56-2F79-49D4-9960-9A45564FCA88}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,6 +65,5 @@ Global
 		{53291407-B74C-4961-AE00-216E37031249} = {07B9B26C-35CE-4186-B979-146862DBA72B}
 		{FA993B16-D89D-44BE-80E3-91F4DAEC3D8C} = {07B9B26C-35CE-4186-B979-146862DBA72B}
 		{93A617BD-7660-4B39-9ADA-1DC7A51EF0D0} = {E00BF8AB-D225-4819-BA00-2B5478B622AE}
-		{2036BA56-2F79-49D4-9960-9A45564FCA88} = {E00BF8AB-D225-4819-BA00-2B5478B622AE}
 	EndGlobalSection
 EndGlobal

@@ -38,7 +38,7 @@ public class OwnersController(
    // Get owner by Id as Dto
    // http://localhost:5100/banking/owners/{id}
    [HttpGet("{id:guid}")]
-   public async Task<ActionResult<OwnerDto>> GetOwnerById(
+   public async Task<ActionResult<OwnerDto?>> GetOwnerById(
       [FromRoute] Guid id
    ) {
       logger.LogDebug("GetOwnerById() id={id}", id.As8());
@@ -86,25 +86,25 @@ public class OwnersController(
    // Get owners by birthdate as Dtos
    // http://localhost:5100/banking/owners/birthdate/?from=yyyy-MM-dd&to=yyyy-MM-dd
    [HttpGet("birthdate")]
-   public async Task<ActionResult<IEnumerable<OwnerDto>>> GetOwnerByBirthdate(
+   public async Task<ActionResult<IEnumerable<OwnerDto>>> GetOwnersByBirthdate(
       [FromQuery] string from,   // Date must be in the format yyyy-MM-dd
                                  // MM = 01 for January through 12 for December
       [FromQuery] string to      
    ) {
-      logger.LogDebug("GetOwnerByBirthdate() from={from} to={to}", from, to);
+      logger.LogDebug("GetOwnersByBirthdate() from={from} to={to}", from, to);
 
       // Convert string to DateTime
       var (errorFrom, dateFrom) = ConvertToDateTime(from);
       if(errorFrom) 
-         return BadRequest($"GetOwnerByBirthdate: Invalid date 'from': {from}");
+         return BadRequest($"GetOwnersByBirthdate: Invalid date 'from': {from}");
       var (errorTo, dateTo) = ConvertToDateTime(to);
       if(errorTo) 
-         return BadRequest($"GetOwnerByBirthdate: Invalid date 'to': {to}");
+         return BadRequest($"GetOwnersByBirthdate: Invalid date 'to': {to}");
 
       // Get owners by birthdate
 //    var owners = await ownersRepository.SelectByBirthDateAsync(dateFrom, dateTo);   
       var owners = await ownersRepository.FilterByAsync(o => 
-         o.Birthdate <= dateFrom && o.Birthdate >= dateTo);   
+         o.Birthdate >= dateFrom && o.Birthdate <= dateTo);   
       
       // return owners as Dtos
       return Ok(mapper.Map<IEnumerable<OwnerDto>>(owners));
@@ -188,7 +188,7 @@ public class OwnersController(
       logger.LogDebug("DeleteOwner {id}", id.As8());
       
       // check if owner with given Id exists
-      Owner? owner = await ownersRepository.FindByIdAsync(id);
+      var owner = await ownersRepository.FindByIdAsync(id);
       if (owner == null)
          return NotFound("DeleteOwner: Owner with given id not found.");
 

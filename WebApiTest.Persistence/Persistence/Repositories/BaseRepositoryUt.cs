@@ -15,9 +15,15 @@ public abstract class BaseRepositoryUt {
    protected readonly Seed _seed;
 
    protected BaseRepositoryUt() {
+      
+      // Test DI-Container
       IServiceCollection services = new ServiceCollection();
+      // Add Core, UseCases, Mapper, ...
       services.AddCore();
+      // Add Repositories, Test Databases, ...
       services.AddPersistenceTest();
+      // Build ServiceProvider,
+      // and use Dependency Injection or Service Locator Pattern
       var serviceProvider = services.BuildServiceProvider()
          ?? throw new Exception("Failed to create an instance of ServiceProvider");
 

@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using WebApi.Controllers;
 using WebApi.Core;
+using WebApi.Di;
 using WebApi.Persistence;
 using WebApiTest.Di;
 using WebApiTest.Persistence;
@@ -20,9 +21,16 @@ public class BaseControllerTest {
    protected readonly Seed _seed;
 
    protected BaseControllerTest() {
+      
+      // Prepare Test DI-Container
       IServiceCollection serviceCollection = new ServiceCollection();
-      serviceCollection.AddPersistenceTest();
+      // Add Controllers   
       serviceCollection.AddControllersTest();
+      // Add Core, UseCases, Mapper, ...
+      serviceCollection.AddCore();
+      // Add Persistence, Repositories, Database, ...
+      serviceCollection.AddPersistenceTest();
+      // Create Test DI-Container
       var serviceProvider = serviceCollection.BuildServiceProvider()
          ?? throw new Exception("Failed to build Serviceprovider");
 
@@ -36,7 +44,6 @@ public class BaseControllerTest {
          ?? throw new Exception("Failed to create an instance of OwnersController");
       _accountsController = serviceProvider.GetRequiredService<AccountsController>()
          ?? throw new Exception("Failed to create an instance of AccountsController");
-      
       
       _ownersRepository = serviceProvider.GetRequiredService<IOwnersRepository>()
          ?? throw new Exception("Failed to create an instance of IOwnersRepository");

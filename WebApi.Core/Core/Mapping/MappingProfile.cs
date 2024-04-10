@@ -5,6 +5,7 @@ using WebApi.Core.Dto;
 
 [assembly: InternalsVisibleTo("WebApiTest")]
 [assembly: InternalsVisibleTo("WebApiTest.Core")]
+[assembly: InternalsVisibleTo("WebApiTest.Controllers")]
 namespace WebApi.Core.Mapping;
 internal class MappingProfile : Profile {
    public MappingProfile() {

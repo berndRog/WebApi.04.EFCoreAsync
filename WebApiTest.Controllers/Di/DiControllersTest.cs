@@ -3,12 +3,11 @@ using WebApi.Controllers;
 namespace WebApiTest.Di;
 
 public static class DiControllersTest {
-   public static IServiceCollection AddControllersTest(
+   public static void AddControllersTest(
       this IServiceCollection services
    ) {
       // Controllers
       services.AddScoped<OwnersController>();
       services.AddScoped<AccountsController>();
-      return services;
    }
 }

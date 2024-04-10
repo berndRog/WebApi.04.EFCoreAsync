@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
+using WebApi.Core.DomainModel.Entities;
 using WebApi.Core.Dto;
 using Xunit;
 namespace WebApiTest.Controllers;
@@ -11,63 +8,72 @@ namespace WebApiTest.Controllers;
 public class OwnersControllerTest: BaseControllerTest {
 
    [Fact]
-   public async Task GetByIdTest() {
+   public async Task GetOwners() {
       // Arrange
       await _arrangeTest.OwnersAsync(_seed);
-      var owner1Dto = _mapper.Map<OwnerDto>(_seed.Owner1); 
+      var expected = _mapper.Map<IEnumerable<OwnerDto>>(_seed.Owners); 
       
       // Act
-      var response = await _ownersController.GetOwnerById(_seed.Owner1.Id);
+      var actionResult = await _ownersController.GetOwners();
       
       // Assert
-      var(success, result, value) = 
-         Helper.ResultFromResponse<OkObjectResult, OwnerDto>(response);
-      success.Should().BeTrue();
+      THelper.IsOk(actionResult!, expected);
+   }
+   
+   [Fact]
+   public async Task GetOwnerByIdTest() {
+      // Arrange
+      await _arrangeTest.OwnersAsync(_seed);
+      var expected = _mapper.Map<OwnerDto>(_seed.Owner1); 
       
-      result.StatusCode.Should().Be(200);
-      value.Should().NotBeNull().And
-         .BeEquivalentTo(owner1Dto);
+      // Act
+      var actionResult = await _ownersController.GetOwnerById(_seed.Owner1.Id);
+      
+      // Assert
+      THelper.IsOk(actionResult, expected);
    }
 
    [Fact]
    public async Task GetOwnersByNameTest() {
       // Arrange
       await _arrangeTest.OwnersAsync(_seed);
-      var expected = new List<OwnerDto> {
-         _mapper.Map<OwnerDto>(_seed.Owner1),
-         _mapper.Map<OwnerDto>(_seed.Owner2)
-      };
-      var expectedDtos = _mapper.Map<IEnumerable<OwnerDto>>(expected); 
+      var expected = _mapper.Map<IEnumerable<OwnerDto>>( 
+         new List<Owner> { _seed.Owner1, _seed.Owner2 });
       
       // Act
-      var response = await _ownersController.GetOwnersByName("Mustermann");
+      var actionResult = await _ownersController.GetOwnersByName("Mustermann");
      
       // Assert
-      var(success, result,value) = 
-         Helper.ResultFromResponse<OkObjectResult, IEnumerable<OwnerDto>>(response);
-      success.Should().BeTrue();
-
-      result.StatusCode.Should().Be(200);
-      value.Should().NotBeNull().And
-         .BeEquivalentTo(expectedDtos);
+      THelper.IsOk(actionResult!, expected);
    }
-
-
+   
    [Fact]
-   public async Task GetByIdNotFoundTest() {
+   public async Task GetOwnerByEmailTest() {
       // Arrange
       await _arrangeTest.OwnersAsync(_seed);
-      var idError = new Guid("12345678-0000-0000-0000-000000000000");
+      var email = _seed.Owner1.Email;
+      var expected = _mapper.Map<OwnerDto>(_seed.Owner1);    
       
       // Act
-      var response = await _ownersController.GetOwnerById(idError);
+      var actionResult = await _ownersController.GetOwnerByEmail(email);
       
       // Assert
-      var (success, result, value) = 
-         Helper.ResultFromResponse<NotFoundObjectResult, OwnerDto>(response);
-      success.Should().BeFalse();
+      THelper.IsOk(actionResult, expected);
+   }
 
-      result.StatusCode.Should().Be(404);
+   [Fact]
+   public async Task GetOwnersByBirthDate() {
+      // Arrange
+      await _arrangeTest.OwnersAsync(_seed);
+      var expected = 
+         _mapper.Map<IEnumerable<OwnerDto>>(new List<Owner> { _seed.Owner3, _seed.Owner4 });
+      
+      // Act
+      var actionResult = 
+         await _ownersController.GetOwnersByBirthdate("1960-01-01", "1969-12-31");
+      
+      // Assert
+      THelper.IsOk(actionResult!, expected!);
    }
    
    [Fact]
@@ -76,33 +82,40 @@ public class OwnersControllerTest: BaseControllerTest {
       var owner1Dto = _mapper.Map<OwnerDto>(_seed.Owner1); 
       
       // Act
-      var response = await _ownersController.CreateOwner(owner1Dto);
+      var actionResult = await _ownersController.CreateOwner(owner1Dto);
       
       // Assert
-      var(success, result, value) = 
-         Helper.ResultFromResponse<CreatedResult, OwnerDto>(response);
-      success.Should().BeTrue();
+      THelper.IsCreated(actionResult!, owner1Dto);
+   }
 
-      result.StatusCode.Should().Be(201);
-      value.Should().NotBeNull().And
-         .BeEquivalentTo(owner1Dto);
+   [Fact]
+   public async Task UpdateOwnerTest() {
+      // Arrange
+      await _arrangeTest.OwnersAsync(_seed);
+      var owner1Dto = _mapper.Map<OwnerDto>(_seed.Owner1);
+      var updatedOwner1Dto = owner1Dto with {
+         Name = "Erika Meier", 
+         Email = "erika.meier@icloud.com"
+      };
+      
+      // Act
+      var actionResult = 
+         await _ownersController.UpdateOwner(owner1Dto.Id, updatedOwner1Dto);      
+      
+      // Assert
+      THelper.IsOk(actionResult!, updatedOwner1Dto);
    }
    
    [Fact]
-   public async Task CreateOwnerConflictTest() {
+   public async Task DeleteOwnerTest() {
       // Arrange
-      var owner1Dto = _mapper.Map<OwnerDto>(_seed.Owner1); 
-      await _ownersController.CreateOwner(owner1Dto);
+      await _arrangeTest.OwnersAsync(_seed);
+      var id = _seed.Owner1.Id;
       
       // Act
-      var response = await _ownersController.CreateOwner(owner1Dto);
+      var actionResult = await _ownersController.DeleteOwner(id);      
       
       // Assert
-      var(success,result,value) = 
-         Helper.ResultFromResponse<ConflictObjectResult, OwnerDto>(response);
-      success.Should().BeFalse();
-
-      result.StatusCode.Should().Be(409);
-      
+      THelper.IsNoContent(actionResult);
    }
 }

@@ -36,9 +36,6 @@ public static class DiTestPersistence {
          builder.AddDebug();
       });
       
-      // UseCases, Mapper ...
-      services.AddCore();
-      
       // Repository, Database ...
       services.AddSingleton<IOwnersRepository, OwnersRepository>();
       services.AddSingleton<IAccountsRepository, AccountsRepository>();      
