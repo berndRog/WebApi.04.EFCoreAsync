@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using WebApi.Di;
 
@@ -44,6 +45,11 @@ public class Program {
       var app = builder.Build();
       // use http logging
       app.UseHttpLogging();
+      // error endpoints
+      if (app.Environment.IsDevelopment())
+         app.UseExceptionHandler("/banking/error-development");     
+      else     
+         app.UseExceptionHandler("/banking/error");  
       // routing
       app.MapControllers();
       // Run the WebApplication
