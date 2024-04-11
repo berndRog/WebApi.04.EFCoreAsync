@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using WebApi.Controllers;
 using WebApi.Core;
+using WebApiTest.Di;
 namespace WebApiTest.Controllers.Moq;
 
 
@@ -52,5 +53,3 @@ public class BaseControllerUt {
 
    }
 }
-
-

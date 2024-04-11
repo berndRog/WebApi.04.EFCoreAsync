@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using WebApi.Core.DomainModel.Entities;
 using WebApi.Core.Mapping;
-namespace WebApiTest.Controllers.Moq;
+namespace WebApiTest.Di;
 
 public static class DiMoq {
 

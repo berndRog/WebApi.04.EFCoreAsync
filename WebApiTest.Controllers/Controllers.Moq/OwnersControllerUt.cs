@@ -9,16 +9,14 @@ using Xunit;
 namespace WebApiTest.Controllers.Moq;
 
 [Collection(nameof(SystemTestCollectionDefinition))]
-public class OwnersControllerUt: BaseControllerUt {
-
+public class OwnersControllerUt : BaseControllerUt {
    [Fact]
    public async Task GetOwners() {
       // Arrange
       var repoResult = _seed.Owners;
       // mock the result of the repository
-      _mockOwnersRepository.Setup(repository => 
-            repository.SelectAsync(false))
-                      .ReturnsAsync(repoResult);
+      _mockOwnersRepository.Setup(r => r.SelectAsync(false))
+         .ReturnsAsync(repoResult);
       var expected = _mapper.Map<IEnumerable<OwnerDto>>(repoResult);
 
       // Act
@@ -34,9 +32,8 @@ public class OwnersControllerUt: BaseControllerUt {
       var id = _seed.Owner1.Id;
       var repoResult = _seed.Owner1;
       // mock the result of the repository
-      _mockOwnersRepository.Setup(repository => 
-            repository.FindByIdAsync(id))
-                      .ReturnsAsync(repoResult);
+      _mockOwnersRepository.Setup(r => r.FindByIdAsync(id))
+         .ReturnsAsync(repoResult);
       var expected = _mapper.Map<OwnerDto>(repoResult);
 
       // Act
@@ -51,9 +48,8 @@ public class OwnersControllerUt: BaseControllerUt {
       // Arrange
       var id = Guid.NewGuid();
       var repoResult = (Owner?)null;
-      _mockOwnersRepository.Setup(repository => 
-            repository.FindByIdAsync(id))
-                      .ReturnsAsync(repoResult);
+      _mockOwnersRepository.Setup(r => r.FindByIdAsync(id))
+         .ReturnsAsync(repoResult);
 
       // Act
       var actionResult = await _ownersController.GetOwnerById(id);
@@ -67,10 +63,9 @@ public class OwnersControllerUt: BaseControllerUt {
       // Arrange
       var name = "Mustermann";
       var repoResult = new List<Owner> { _seed.Owner1, _seed.Owner2 };
-      _mockOwnersRepository.Setup(repository => 
-            repository.FilterByAsync(o => o.Name.Contains(name)))
-//          repository.FilterByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
-                      .ReturnsAsync(repoResult);
+      _mockOwnersRepository.Setup(r => r.FilterByAsync(o => o.Name.Contains(name)))
+         //                            r.FilterByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
+         .ReturnsAsync(repoResult);
       var expected = _mapper.Map<IEnumerable<OwnerDto>>(repoResult);
 
       // Act
@@ -85,9 +80,8 @@ public class OwnersControllerUt: BaseControllerUt {
       // Arrange
       var name = "Mustermann";
       var repoResult = new List<Owner>();
-      _mockOwnersRepository.Setup(repository => 
-            repository.FilterByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
-                      .ReturnsAsync(repoResult);
+      _mockOwnersRepository.Setup(r => r.FilterByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
+         .ReturnsAsync(repoResult);
       var expected = _mapper.Map<IEnumerable<OwnerDto>>(repoResult);
 
       // Act
@@ -103,10 +97,9 @@ public class OwnersControllerUt: BaseControllerUt {
       var email = _seed.Owner1.Email;
       var repoResult = _seed.Owner1;
       // mock the result of the repository
-      _mockOwnersRepository.Setup(repository => 
-            repository.FindByAsync(owner => owner.Email == email))
-//          repository.FindByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
-                      .ReturnsAsync(repoResult);
+      _mockOwnersRepository.Setup(r => r.FindByAsync(owner => owner.Email == email))
+         //                            r.FindByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
+         .ReturnsAsync(repoResult);
       var expected = _mapper.Map<OwnerDto>(repoResult);
 
       // Act
@@ -121,9 +114,8 @@ public class OwnersControllerUt: BaseControllerUt {
       // Arrange
       var email = "a.b@c.de";
       Owner? repoResult = null;
-      _mockOwnersRepository.Setup(repository => 
-            repository.FindByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
-                      .ReturnsAsync(repoResult);
+      _mockOwnersRepository.Setup(r => r.FindByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
+         .ReturnsAsync(repoResult);
 
       // Act
       var actionResult = await _ownersController.GetOwnerByEmail(email);
@@ -136,9 +128,8 @@ public class OwnersControllerUt: BaseControllerUt {
    public async Task GetOwnersByBirthDate_Ok() {
       // Arrange
       var repoResult = new List<Owner> { _seed.Owner3, _seed.Owner4 };
-      _mockOwnersRepository.Setup(repository => 
-            repository.FilterByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
-                      .ReturnsAsync(repoResult);
+      _mockOwnersRepository.Setup(r => r.FilterByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
+         .ReturnsAsync(repoResult);
       var expected = _mapper.Map<IEnumerable<OwnerDto>>(repoResult);
 
       // Act
@@ -153,9 +144,8 @@ public class OwnersControllerUt: BaseControllerUt {
    public async Task GetOwnersByBirthDate_EmptyList() {
       // Arrange
       var repoResult = new List<Owner>();
-      _mockOwnersRepository.Setup(repository => 
-            repository.FilterByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
-               .ReturnsAsync(repoResult);
+      _mockOwnersRepository.Setup(r => r.FilterByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
+         .ReturnsAsync(repoResult);
       var expected = _mapper.Map<IEnumerable<OwnerDto>>(repoResult);
 
       // Act
@@ -173,13 +163,11 @@ public class OwnersControllerUt: BaseControllerUt {
       var owner1Dto = _mapper.Map<OwnerDto>(_seed.Owner1);
       Owner? addedOwner = null;
       // mock the repository's Add method
-      _mockOwnersRepository.Setup(repository => 
-            repository.Add(It.IsAny<Owner>()))
-               .Callback<Owner>(owner => addedOwner = owner);
+      _mockOwnersRepository.Setup(r => r.Add(It.IsAny<Owner>()))
+         .Callback<Owner>(owner => addedOwner = owner);
       // mock the data context's SaveAllChangesAsync method
-      _mockDataContext.Setup(context => 
-            context.SaveAllChangesAsync())
-               .ReturnsAsync(true);
+      _mockDataContext.Setup(c => c.SaveAllChangesAsync())
+         .ReturnsAsync(true);
 
       // Act
       var actionResult = await _ownersController.CreateOwner(owner1Dto);
@@ -187,11 +175,9 @@ public class OwnersControllerUt: BaseControllerUt {
       // Assert
       THelper.IsCreated(actionResult!, owner1Dto);
       // Verify that the repository's Add method was called once
-      _mockOwnersRepository.Verify(repository => 
-         repository.Add(It.IsAny<Owner>()), Times.Once);
+      _mockOwnersRepository.Verify(r => r.Add(It.IsAny<Owner>()), Times.Once);
       // Verify that the data context's SaveAllChangesAsync method was called once
-      _mockDataContext.Verify(dataContext => 
-         dataContext.SaveAllChangesAsync(), Times.Once);
+      _mockDataContext.Verify(c => c.SaveAllChangesAsync(), Times.Once);
    }
 
    [Fact]
@@ -199,9 +185,8 @@ public class OwnersControllerUt: BaseControllerUt {
       // Arrange
       var owner1Dto = _mapper.Map<OwnerDto>(_seed.Owner1);
       // mock the repository's FindByIdAsync method to return an existing owner
-      _mockOwnersRepository.Setup(repository => 
-            repository.FindByIdAsync(owner1Dto.Id))
-                      .ReturnsAsync(_seed.Owner1);
+      _mockOwnersRepository.Setup(r => r.FindByIdAsync(owner1Dto.Id))
+         .ReturnsAsync(_seed.Owner1);
 
       // Act
       var actionResult = await _ownersController.CreateOwner(owner1Dto);
@@ -209,30 +194,25 @@ public class OwnersControllerUt: BaseControllerUt {
       // Assert
       THelper.IsConflict(actionResult!);
       // Verify that the repository's Add method was not called
-      _mockOwnersRepository
-         .Verify(repository => repository.Add(It.IsAny<Owner>()), Times.Never);
+      _mockOwnersRepository.Verify(r => r.Add(It.IsAny<Owner>()), Times.Never);
       // Verify that the data context's SaveAllChangesAsync method was not called
-      _mockDataContext
-         .Verify(dataContext => dataContext.SaveAllChangesAsync(), Times.Never);
+      _mockDataContext.Verify(c => c.SaveAllChangesAsync(), Times.Never);
    }
 
    [Fact]
    public async Task UpdateOwner_Created() {
       // Arrange
       var owner1Dto = _mapper.Map<OwnerDto>(_seed.Owner1);
-      Owner? addedOwner = null;
+      Owner? updatedOwner = null;
       // mock the repository's FindByIdAsync method to return an existing owner
-      _mockOwnersRepository.Setup(repository => 
-            repository.FindByIdAsync(_seed.Owner1.Id))
-               .ReturnsAsync(_seed.Owner1);
+      _mockOwnersRepository.Setup(r => r.FindByIdAsync(_seed.Owner1.Id))
+         .ReturnsAsync(_seed.Owner1);
       // mock the repository's Update method
-      _mockOwnersRepository.Setup(repository => 
-            repository.UpdateAsync(It.IsAny<Owner>()))
-                      .Callback<Owner>(owner => addedOwner = owner);
+      _mockOwnersRepository.Setup(r => r.UpdateAsync(It.IsAny<Owner>()))
+         .Callback<Owner>(owner => updatedOwner = owner);
       // mock the data context's SaveAllChangesAsync method
-      _mockDataContext.Setup(context => 
-            context.SaveAllChangesAsync())
-                   .ReturnsAsync(true);
+      _mockDataContext.Setup(c => c.SaveAllChangesAsync())
+         .ReturnsAsync(true);
 
       // Act
       var actionResult = await _ownersController.UpdateOwner(owner1Dto.Id, owner1Dto);
@@ -240,34 +220,28 @@ public class OwnersControllerUt: BaseControllerUt {
       // Assert
       THelper.IsOk(actionResult!, owner1Dto);
       // Verify that the repository's Update method was called once
-      _mockOwnersRepository.Verify(repository => 
-         repository.UpdateAsync(It.IsAny<Owner>()), Times.Once);
+      _mockOwnersRepository.Verify(r => r.UpdateAsync(It.IsAny<Owner>()), Times.Once);
       // Verify that the data context's SaveAllChangesAsync method was called once
-      _mockDataContext.Verify(dataContext => 
-         dataContext.SaveAllChangesAsync(), Times.Once);
+      _mockDataContext.Verify(c => c.SaveAllChangesAsync(), Times.Once);
    }
 
    [Fact]
    public async Task DeleteOwner_NoContent() {
       var owner = _seed.Owner1;
       var id = owner.Id;
-      
-      _mockOwnersRepository.Setup(repository => 
-            repository.FindByIdAsync(id))
-               .ReturnsAsync(owner);
-      _mockOwnersRepository.Setup(repository => 
-            repository.Remove(owner))
-               .Callback<Owner>(ownerToRemove => { ownerToRemove = owner; });
-      _mockDataContext.Setup(context => 
-            context.SaveAllChangesAsync())
-               .ReturnsAsync(true);
+
+      _mockOwnersRepository.Setup(r => r.FindByIdAsync(id))
+         .ReturnsAsync(owner);
+      _mockOwnersRepository.Setup(r => r.Remove(owner))
+         .Callback<Owner>(ownerToRemove => { ownerToRemove = owner; });
+      _mockDataContext.Setup(c => c.SaveAllChangesAsync())
+         .ReturnsAsync(true);
 
       // Act
       var result = await _ownersController.DeleteOwner(id);
 
       // Assert
-      _mockOwnersRepository.Verify(repo => repo.Remove(owner), Times.Once);
-      _mockDataContext.Verify(context => context.SaveAllChangesAsync(), Times.Once);
+      _mockOwnersRepository.Verify(r => r.Remove(owner), Times.Once);
+      _mockDataContext.Verify(c => c.SaveAllChangesAsync(), Times.Once);
    }
-      
 }
