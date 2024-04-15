@@ -68,7 +68,11 @@ public  class AccountsRepositoryUt: BaseRepositoryUt {
          await _accountsRepository.FindByAsync(o => o.Iban.Contains("DE201000"));
       // Assert
       _dataContext.LogChangeTracker("FindbyIban");
-      actual.Should().BeEquivalentTo(_seed.Account3, options => options.Excluding(a => a.Owner));
+      actual.Should().BeEquivalentTo(_seed.Account3, options => {
+         options.Excluding(account => account.Owner);
+         options.IgnoringCyclicReferences();
+         return options;
+      });
    }
    
    [Fact]
