@@ -47,9 +47,8 @@ public class OwnersControllerUt : BaseControllerUt {
    public async Task GetOwnerById_NotFound() {
       // Arrange
       var id = Guid.NewGuid();
-      var repoResult = (Owner?)null;
       _mockOwnersRepository.Setup(r => r.FindByIdAsync(id))
-         .ReturnsAsync(repoResult);
+         .ReturnsAsync(null as Owner);
 
       // Act
       var actionResult = await _ownersController.GetOwnerById(id);
@@ -79,16 +78,14 @@ public class OwnersControllerUt : BaseControllerUt {
    public async Task GetOwnerByName_NotFound() {
       // Arrange
       var name = "Micky Mouse";
-      var repoResult = _seed.Owner1;
       _mockOwnersRepository.Setup(r => r.FindByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
-         .ReturnsAsync(repoResult);
-      var expected = _mapper.Map<OwnerDto>(repoResult);
+         .ReturnsAsync(null as Owner);
 
       // Act
       var actionResult = await _ownersController.GetOwnerByName(name);
 
       // Assert
-      THelper.IsOk(actionResult, expected);
+      THelper.IsNotFound(actionResult);
    }
 
    [Fact]
@@ -113,9 +110,8 @@ public class OwnersControllerUt : BaseControllerUt {
    public async Task GetOwnerByEmail_NotFound() {
       // Arrange
       var email = "a.b@c.de";
-      Owner? repoResult = null;
       _mockOwnersRepository.Setup(r => r.FindByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
-         .ReturnsAsync(repoResult);
+         .ReturnsAsync(null as Owner);
 
       // Act
       var actionResult = await _ownersController.GetOwnerByEmail(email);

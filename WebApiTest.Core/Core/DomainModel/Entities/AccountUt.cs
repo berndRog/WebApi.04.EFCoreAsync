@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using WebApi.Core.DomainModel.Entities;
+using WebApi.Core.Dto;
 using WebApi.Core.Misc;
 
 namespace WebApiTest.Core.DomainModel.Entities;
@@ -103,6 +104,31 @@ public class AccountUt {
       actual.Iban.Should().Be(_seed.Account1.Iban);
       actual.Balance.Should().Be(_seed.Account1.Balance);
       actual.Owner.Should().Be(owner);
+      actual.OwnerId.Should().Be(owner.Id);
+   }
+   
+   [Fact]
+   public void CreateIbanByDtoUt(){
+      
+      // Arrange
+      var owner = _seed.Owner1;
+      var accounDto = new AccountDto(
+         Id: _seed.Account1.Id,
+         Iban: string.Empty, //_seed.Account1.Iban,
+         Balance: _seed.Account1.Balance,
+         OwnerId: owner.Id
+      );
+
+      // Act
+      var actual = new Account(accounDto);
+      
+      string ibanGrouped = actual.Iban.AsIban();
+      // Assert
+      actual.Should().NotBeNull();
+      actual.Should().BeOfType<Account>();
+      actual.Id.Should().Be(_seed.Account1.Id);
+      actual.Balance.Should().Be(_seed.Account1.Balance);
+   // actual.Owner.Should().BeEquivalentTo(owner);
       actual.OwnerId.Should().Be(owner.Id);
    }
    

@@ -72,13 +72,11 @@ public class AccountsControllerUt : BaseControllerUt {
    public async Task GetAccountByIban_NotFound() {
       // Arrange
       _seed.InitAccountsForOwner1();
-      Account? repoResult = null;
       var iban = _seed.Account8.Iban;
       // mock the result of the repository
       _mockAccountsRepository.Setup(repository => 
             repository.FindByAsync(It.IsAny<Expression<Func<Account, bool>>>()))
-         .ReturnsAsync(repoResult);
-      var expected = _mapper.Map<AccountDto>(repoResult);
+         .ReturnsAsync(null as Account);
 
       // Act
       var actionResult = await _accountsController.GetAccountByIban(iban);
@@ -95,13 +93,14 @@ public class AccountsControllerUt : BaseControllerUt {
       var accountDto = _mapper.Map<AccountDto>(_seed.Account1);
       var expected = accountDto with { OwnerId = owner.Id };
       
+      
       // mock the repository's methods
       _mockOwnersRepository.Setup(repository => 
             repository.FindByIdAsync(owner.Id))
                .ReturnsAsync(owner);
       _mockAccountsRepository.Setup(repository => 
             repository.FindByIdAsync(account.Id))
-               .ReturnsAsync(account);
+               .ReturnsAsync(null as Account);
       _mockAccountsRepository.Setup(repository => 
             repository.Add(It.IsAny<Account>()))
                .Callback<Account>(a => account = a);

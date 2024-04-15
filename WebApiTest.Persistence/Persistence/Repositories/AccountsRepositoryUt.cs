@@ -65,7 +65,7 @@ public  class AccountsRepositoryUt: BaseRepositoryUt {
       await _arrangeTest.OwnersWithAccountsAsync(_seed); // repository cache is cleared
       // Act 
       var actual =  
-         await _accountsRepository.FindByAsync(o => o.Iban.Contains("DE20 1000"));
+         await _accountsRepository.FindByAsync(o => o.Iban.Contains("DE201000"));
       // Assert
       _dataContext.LogChangeTracker("FindbyIban");
       actual.Should().BeEquivalentTo(_seed.Account3, options => options.Excluding(a => a.Owner));

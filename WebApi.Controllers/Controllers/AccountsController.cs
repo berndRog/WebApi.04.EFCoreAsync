@@ -79,15 +79,14 @@ public class AccountsController(
       logger.LogDebug("CreateAccount iban={iban}", accountDto.Iban);
       
       // map Dto to DomainModel
-      var account = mapper.Map<Account>(accountDto);
+//    var account = mapper.Map<Account>(accountDto);
+      var account = new Account(accountDto);
       
       // check if ownerId exists
       var owner = await ownersRepository.FindByIdAsync(ownerId);
       if (owner == null)
          return BadRequest("Bad request: ownerId does't exists.");
       
-      // Create Iban
-
       // check if account with given Id already exists   
       if(await accountsRepository.FindByIdAsync(account.Id) != null) 
          return Conflict("Account with given Id already exists");
@@ -118,13 +117,15 @@ public class AccountsController(
       logger.LogDebug("DeleteAccount ownerId={ownerId} id={id}", ownerId, id);
       
       // check if account with given Id already exists   
-      Account? account = await accountsRepository.FindByIdAsync(id); 
+      var account = await accountsRepository.FindByIdAsync(id); 
       if(account == null)
-         return NotFound("UpdateAccount: Account not found.");
+         return NotFound("DeleteAccount: Account not found.");
 
       // remove the account from the owners account list is not necessary,
       // there is no datafield in the dabase referencing the account
       // i.e. the foreign key is the ownerId in the account table
+      if(account.OwnerId != ownerId)
+         return BadRequest("DeleteAccount: Account does not belong to owner.");
       
       // save to repository 
       accountsRepository.Remove(account);

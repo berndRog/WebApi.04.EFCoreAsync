@@ -42,7 +42,7 @@ public class AccountsControllerTest: BaseControllerTest {
       var expected = _mapper.Map<AccountDto>(_seed.Account6);
 
       // Act
-      var actionResult = await _accountsController.GetAccountByIban("DE50 10000000 0000000000");
+      var actionResult = await _accountsController.GetAccountByIban("DE50100000000000000000");
 
       // Assert
       THelper.IsOk(actionResult, expected);

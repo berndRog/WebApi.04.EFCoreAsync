@@ -95,20 +95,20 @@ public static class THelper {
       actionResult.Should().BeOfType<NoContentResult>();
    }
    
-   // HttpStatusCode.NotFound (404)
-   public static void IsNotFound(
-      IActionResult actionResult
-   ) {
-      actionResult.Should().NotBeNull();
-      actionResult.Should().BeOfType<NotFoundResult>();
-   }
+   // // HttpStatusCode.NotFound (404)
+   // public static void IsNotFound(
+   //    IActionResult actionResult
+   // ) {
+   //    actionResult.Should().NotBeNull();
+   //    actionResult.Should().BeOfType<NotFoundResult>();
+   // }
    
    // HttpStatusCode.NotFound (404)
    public static void IsNotFound<T>(
       ActionResult<T> actionResult
    ) {
       actionResult.Should().NotBeNull();
-      actionResult.Should().BeOfType<NotFoundResult>();
+      actionResult!.Result.Should().BeOfType<NotFoundObjectResult>();
    }
    
    // HttpStatusCode.Conflict (409)
