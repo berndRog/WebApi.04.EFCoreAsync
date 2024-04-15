@@ -36,7 +36,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5100/banking/owners/name?name=Mustermann",
+							"raw": "http://localhost:5100/banking/owners/name?name=Erika Mustermann",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -50,7 +50,7 @@
 							"query": [
 								{
 									"key": "name",
-									"value": "Mustermann"
+									"value": "Erika Mustermann"
 								}
 							]
 						}
@@ -94,7 +94,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5100/banking/owners/email?email=gmail",
+							"raw": "http://localhost:5100/banking/owners/email?email=m.mustermann@gmail.com",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -108,7 +108,7 @@
 							"query": [
 								{
 									"key": "email",
-									"value": "gmail"
+									"value": "m.mustermann@gmail.com"
 								}
 							]
 						}
@@ -654,6 +654,33 @@
 					"response": []
 				},
 				{
+					"name": "Get account by Iban",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5100/banking/accounts/iban?iban=DE102000",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5100",
+							"path": [
+								"banking",
+								"accounts",
+								"iban"
+							],
+							"query": [
+								{
+									"key": "iban",
+									"value": "DE102000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get accounts for owner1",
 					"request": {
 						"method": "GET",
@@ -729,7 +756,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"id\": \"01000000-0000-0000-0000-000000000000\",\r\n  \"iban\": \"DE101000\",\r\n  \"balance\": 2100\r\n}",
+							"raw": "{\r\n  \"id\": \"01000000-0000-0000-0000-000000000000\",\r\n  \"iban\": \"DE101000\",\r\n  \"balance\": 2100,\r\n  \"ownerId\": \"10000000-0000-0000-0000-000000000000\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
