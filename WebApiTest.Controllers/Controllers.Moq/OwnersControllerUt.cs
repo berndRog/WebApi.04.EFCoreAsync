@@ -23,7 +23,7 @@ public class OwnersControllerUt : BaseControllerUt {
       var actionResult = await _ownersController.GetOwners();
 
       // Assert
-      THelper.IsOk(actionResult!, expected);
+      THelper.IsEnumerableOk(actionResult, expected);
    }
 
    [Fact]
@@ -59,36 +59,36 @@ public class OwnersControllerUt : BaseControllerUt {
    }
 
    [Fact]
-   public async Task GetOwnersByName_Ok() {
+   public async Task GetOwnerByName_Ok() {
       // Arrange
-      var name = "Mustermann";
-      var repoResult = new List<Owner> { _seed.Owner1, _seed.Owner2 };
-      _mockOwnersRepository.Setup(r => r.FilterByAsync(o => o.Name.Contains(name)))
-         //                            r.FilterByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
+      var name = _seed.Owner1.Name;
+      var repoResult = _seed.Owner1;
+      _mockOwnersRepository.Setup(r => r.FindByAsync(o => o.Name == name))
+         //                            r.FindByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
          .ReturnsAsync(repoResult);
-      var expected = _mapper.Map<IEnumerable<OwnerDto>>(repoResult);
+      var expected = _mapper.Map<OwnerDto?>(repoResult);
 
       // Act
-      var actionResult = await _ownersController.GetOwnersByName(name);
+      var actionResult = await _ownersController.GetOwnerByName(name);
 
       // Assert
-      THelper.IsOk(actionResult!, expected);
+      THelper.IsOk(actionResult, expected);
    }
 
    [Fact]
-   public async Task GetOwnersByName_EmptyList() {
+   public async Task GetOwnerByName_NotFound() {
       // Arrange
-      var name = "Mustermann";
-      var repoResult = new List<Owner>();
-      _mockOwnersRepository.Setup(r => r.FilterByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
+      var name = "Micky Mouse";
+      var repoResult = _seed.Owner1;
+      _mockOwnersRepository.Setup(r => r.FindByAsync(It.IsAny<Expression<Func<Owner, bool>>>()))
          .ReturnsAsync(repoResult);
-      var expected = _mapper.Map<IEnumerable<OwnerDto>>(repoResult);
+      var expected = _mapper.Map<OwnerDto>(repoResult);
 
       // Act
-      var actionResult = await _ownersController.GetOwnersByName(name);
+      var actionResult = await _ownersController.GetOwnerByName(name);
 
       // Assert
-      THelper.IsOk(actionResult!, expected);
+      THelper.IsOk(actionResult, expected);
    }
 
    [Fact]
@@ -106,7 +106,7 @@ public class OwnersControllerUt : BaseControllerUt {
       var actionResult = await _ownersController.GetOwnerByEmail(email);
 
       // Assert
-      THelper.IsOk<OwnerDto?>(actionResult, expected);
+      THelper.IsOk(actionResult, expected);
    }
 
    [Fact]
@@ -137,7 +137,7 @@ public class OwnersControllerUt : BaseControllerUt {
          "1960-01-01", "1969-12-31");
 
       // Assert
-      THelper.IsOk(actionResult!, expected);
+      THelper.IsEnumerableOk(actionResult, expected);
    }
 
    [Fact]
@@ -154,7 +154,7 @@ public class OwnersControllerUt : BaseControllerUt {
       );
 
       // Assert
-      THelper.IsOk(actionResult!, expected);
+      THelper.IsEnumerableOk(actionResult, expected);
    }
 
    [Fact]

@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using WebApi.Core.DomainModel.Entities;
+using WebApi.Core.Misc;
 
 namespace WebApiTest.Core.DomainModel.Entities;
 public class AccountUt {
@@ -39,6 +40,28 @@ public class AccountUt {
       actual.Owner.Should().BeEquivalentTo(owner);
       actual.OwnerId.Should().Be(owner.Id);
    }
+   
+   [Fact]
+   public void CreateIbanUt(){
+      // Arrange
+      var owner = _seed.Owner1;
+      // Act
+      var actual = new Account{
+         Id = _seed.Account1.Id,
+         Balance = _seed.Account1.Balance,
+         Owner = owner,
+         OwnerId = owner.Id
+      };
+      string ibanGrouped = actual.Iban.AsIban();
+      // Assert
+      actual.Should().NotBeNull();
+      actual.Should().BeOfType<Account>();
+      actual.Id.Should().Be(_seed.Account1.Id);
+      actual.Balance.Should().Be(_seed.Account1.Balance);
+      actual.Owner.Should().BeEquivalentTo(owner);
+      actual.OwnerId.Should().Be(owner.Id);
+   }
+   
    [Fact]
    public void GetterUt(){
       // Arrange

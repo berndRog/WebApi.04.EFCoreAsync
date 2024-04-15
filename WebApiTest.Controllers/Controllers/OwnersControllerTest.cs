@@ -17,7 +17,7 @@ public class OwnersControllerTest: BaseControllerTest {
       var actionResult = await _ownersController.GetOwners();
       
       // Assert
-      THelper.IsOk(actionResult!, expected);
+      THelper.IsEnumerableOk(actionResult, expected);
    }
    
    [Fact]
@@ -34,17 +34,17 @@ public class OwnersControllerTest: BaseControllerTest {
    }
 
    [Fact]
-   public async Task GetOwnersByNameTest() {
+   public async Task GetOwnerByNameTest() {
       // Arrange
+      var owner = _seed.Owner1;
       await _arrangeTest.OwnersAsync(_seed);
-      var expected = _mapper.Map<IEnumerable<OwnerDto>>( 
-         new List<Owner> { _seed.Owner1, _seed.Owner2 });
+      var expected = _mapper.Map<OwnerDto>(owner);
       
       // Act
-      var actionResult = await _ownersController.GetOwnersByName("Mustermann");
+      var actionResult = await _ownersController.GetOwnerByName(owner.Name);
      
       // Assert
-      THelper.IsOk(actionResult!, expected);
+      THelper.IsOk(actionResult, expected);
    }
    
    [Fact]

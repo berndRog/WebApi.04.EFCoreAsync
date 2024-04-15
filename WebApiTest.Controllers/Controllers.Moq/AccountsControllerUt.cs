@@ -27,7 +27,7 @@ public class AccountsControllerUt : BaseControllerUt {
       var actionResult = await _accountsController.GetAccountsByOwnerId(ownerId);
 
       // Assert
-      THelper.IsOk(actionResult!, expected);
+      THelper.IsEnumerableOk(actionResult, expected);
    }
 
    [Fact]
@@ -45,7 +45,7 @@ public class AccountsControllerUt : BaseControllerUt {
       var actionResult = await _accountsController.GetAccountsByOwnerId(ownerId);
 
       // Assert
-      THelper.IsOk(actionResult!, expectedDtos);
+      THelper.IsEnumerableOk(actionResult, expectedDtos);
    }
 
  
@@ -101,7 +101,7 @@ public class AccountsControllerUt : BaseControllerUt {
                .ReturnsAsync(owner);
       _mockAccountsRepository.Setup(repository => 
             repository.FindByIdAsync(account.Id))
-               .ReturnsAsync((Account)null);
+               .ReturnsAsync(account);
       _mockAccountsRepository.Setup(repository => 
             repository.Add(It.IsAny<Account>()))
                .Callback<Account>(a => account = a);
@@ -112,7 +112,7 @@ public class AccountsControllerUt : BaseControllerUt {
       var actionResult = await _accountsController.CreateAccount(owner.Id, accountDto);
 
       // Assert
-      THelper.IsCreated(actionResult!, expected);
+      THelper.IsCreated(actionResult, expected);
 
       // Verify that the repository's Add method was called once
       _mockAccountsRepository.Verify(repository => 

@@ -44,26 +44,26 @@ public class OwnersController(
       logger.LogDebug("GetOwnerById() id={id}", id.As8());
       return await ownersRepository.FindByIdAsync(id) switch {
          // return owner as Dto
-         { } owner => Ok(mapper.Map<OwnerDto>(owner)),
+         { } owner => Ok(mapper.Map<OwnerDto?>(owner)),
          // return not found
          null => NotFound("Owner with given Id not found")
       };
    }
 
-   // Get owners by name as Dto
+   // Get owner by name as Dto
    // http://localhost:5100/banking/owners/name?name=abc
    [HttpGet("name")]
-   public async Task<ActionResult<IEnumerable<OwnerDto>>> GetOwnersByName(
+   public async Task<ActionResult<OwnerDto?>> GetOwnerByName(
       [FromQuery] string name
    ) {
-      logger.LogDebug("GetOwnersByName() name={name}", name);
+      logger.LogDebug("GetOwnerByName() name={name}", name);
       
       //     await ownersRepository.SelectByNameAsync(name)) switch {
-      return await ownersRepository.FilterByAsync(o => o.Name.Contains(name)) switch {
+      return await ownersRepository.FindByAsync(o => o.Name == name) switch {
         // return owners as Dtos
-         { } owners => Ok(mapper.Map<IEnumerable<OwnerDto>>(owners)),
+         { } owner => Ok(mapper.Map<OwnerDto?>(owner)),
          // return not found
-         null => NotFound("Owners with given name not found")
+         null => NotFound("Owner with given name not found")
       };
    }
 
@@ -73,11 +73,11 @@ public class OwnersController(
    public async Task<ActionResult<OwnerDto?>> GetOwnerByEmail(
       [FromQuery] string email
    ) {
-      logger.LogDebug("GetOwnersByName() email={email}", email);
+      logger.LogDebug("GetOwnerByName() email={email}", email);
       
       return await ownersRepository.FindByAsync(o => o.Email == email) switch {
          // return owner as Dto
-         { } owner => Ok(mapper.Map<OwnerDto>(owner)),
+         { } owner => Ok(mapper.Map<OwnerDto?>(owner)),
          // return not found
          null => NotFound("Owner with given email not found")
       };

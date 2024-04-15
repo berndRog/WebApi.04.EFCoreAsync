@@ -86,6 +86,8 @@ public class AccountsController(
       if (owner == null)
          return BadRequest("Bad request: ownerId does't exists.");
       
+      // Create Iban
+
       // check if account with given Id already exists   
       if(await accountsRepository.FindByIdAsync(account.Id) != null) 
          return Conflict("Account with given Id already exists");

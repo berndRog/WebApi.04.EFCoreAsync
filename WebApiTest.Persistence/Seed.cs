@@ -72,22 +72,22 @@ public class Seed {
       #region Accounts
       Account1 = new Account {
          Id = new Guid("01000000-0000-0000-0000-000000000000"),
-         Iban = "DE10 10000000 0000000000",
+         Iban = "DE10 1000 0000 0000 0000",
          Balance = 2100.0
       };
       Account2 = new Account {
          Id = new Guid("02000000-0000-0000-0000-000000000000"),
-         Iban = "DE10 20000000 0000000000",
+         Iban = "DE10 2000 0000 0000 0000",
          Balance = 2000.0
       };
       Account3 = new Account {
          Id = new Guid("03000000-0000-0000-0000-000000000000"),
-         Iban = "DE20 10000000 0000000000",
+         Iban = "DE20 1000 0000 0000 0000",
          Balance = 3000.0
       };
       Account4 = new Account {
          Id = new Guid("04000000-0000-0000-0000-000000000000"),
-         Iban = "DE30 10000000 0000000000",
+         Iban = "DE30 10000000 00000000",
          Balance = 2500.0
       };
       Account5 = new Account {
