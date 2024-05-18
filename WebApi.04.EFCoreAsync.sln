@@ -21,6 +21,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiTest.Persistence", "W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiTest.Controllers", "WebApiTest.Controllers\WebApiTest.Controllers.csproj", "{93A617BD-7660-4B39-9ADA-1DC7A51EF0D0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Postman", "Postman", "{4D95A1EE-5A7D-4F33-AECA-F9DC74B2ADA1}"
+	ProjectSection(SolutionItems) = preProject
+		Postman\WebApi.03.04.05.06.postman_collection.json = Postman\WebApi.03.04.05.06.postman_collection.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
