@@ -2,7 +2,6 @@ using System;
 namespace WebApi.Core.Dto;
 
 // immutable data class
-// immutable data class
 public record AccountDto(
    Guid Id,
    string Iban,

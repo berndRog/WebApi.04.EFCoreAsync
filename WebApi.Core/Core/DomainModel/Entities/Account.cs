@@ -32,6 +32,4 @@ public class Account: AEntity {
       OwnerId = dto.OwnerId;
    }
    #endregion
-   
-   
 }

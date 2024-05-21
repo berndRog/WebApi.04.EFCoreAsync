@@ -7,12 +7,14 @@ public static class Utils {
       //"DEkk BBBB BBBB CCCC CCCC CC"
       if (iban != null) {
          iban = iban.Replace(" ", "").ToUpper();
-         if (iban.Length == 18) return iban;
+         if (iban.Length == 22) return iban;
       }
       // if iban is not valid, create a new one
       var random = new Random();
-      return "DE" + Digits2(random)+ " "+ Digits4(random) + 
-         Digits4(random) + Digits4(random) + Digits2(random);
+      //     DEkk                           BBBB                    BBBB
+      return "DE" + Digits2(random) + " " + Digits4(random) + " " + Digits4(random) + " " + 
+         // CCCC                    CCCC                   CC
+         Digits4(random) + " " + Digits4(random) + " " + Digits2(random); 
    }
 
    private static string Digits2(Random random) =>
